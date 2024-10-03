@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity, Dimensions } from 'react-native';
 
 const FISH_TYPES = [
-  { name: 'Trout',width:60, size: 30, image: require('../assets/image/fish/trout.png') },
-  { name: 'Bass',width:60, size: 40, image: require('../assets/image/fish/bass.png') },
-  { name: 'Salmon',width:60, size: 50, image: require('../assets/image/fish/salmon.png') },
-  { name: 'Catfish',width:60, size: 45, image: require('../assets/image/fish/catfish.png') },
-  { name: 'Perch',width:60, size: 25, image: require('../assets/image/fish/perch.png') },
-  { name: 'Pike',width:60, size: 45, image: require('../assets/image/fish/pike.png') },
+  { name: 'Trout',width:60, size: 30, image: require('../assets/image/fish/trout.png') ,type:'predator'},
+  { name: 'Bass',width:60, size: 40, image: require('../assets/image/fish/bass.png') ,type:'predator'},
+  { name: 'Salmon',width:60, size: 50, image: require('../assets/image/fish/salmon.png') ,type:'predator'},
+  { name: 'Catfish',width:60, size: 45, image: require('../assets/image/fish/catfish.png') ,type:'prey'},
+  { name: 'Perch',width:60, size: 25, image: require('../assets/image/fish/perch.png') ,type:'prey'},
+  { name: 'Pike',width:60, size: 45, image: require('../assets/image/fish/pike.png') ,type:'prey'},
 ];
 
 const StackFishingSimulatorField = () => {
