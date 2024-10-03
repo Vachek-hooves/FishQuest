@@ -3,22 +3,33 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 import {ContextProvider} from './store/context';
 import WelcomeScreen from './screen/WelcomeScreen';
+import {StackFishingSimulatorField, TabFishingIntroScreen} from './screen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabNavigation=()=>{
-  return (<Tab.Navigator>
-    
-  </Tab.Navigator>)
-}
+const TabNavigation = () => {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen
+        name="TabFishingIntroScreen"
+        component={TabFishingIntroScreen}
+      />
+    </Tab.Navigator>
+  );
+};
 
 function App() {
   return (
     <ContextProvider>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown: false}}>
-          <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+          {/* <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} /> */}
+          <Stack.Screen name="TabNavigation" component={TabNavigation} />
+          <Stack.Screen
+            name="StackFishingSimulatorField"
+            component={StackFishingSimulatorField}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </ContextProvider>
