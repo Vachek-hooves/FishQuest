@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity, Dimensions } from 'react-native';
 
 const FISH_TYPES = [
@@ -12,9 +12,11 @@ const FISH_TYPES = [
 
 const StackFishingSimulatorField = () => {
   const [fishes, setFishes] = useState([]);
+  const animationRef = useRef();
 
   useEffect(() => {
     generateFishes();
+    return () => cancelAnimation();
   }, []);
 
   const generateFishes = () => {
@@ -22,8 +24,40 @@ const StackFishingSimulatorField = () => {
       ...fish,
       x: Math.random() * (Dimensions.get('window').width - fish.width),
       y: Math.random() * (Dimensions.get('window').height / 2 - fish.size) + Dimensions.get('window').height / 2,
+      dx: (Math.random() - 0.5) * 0.5, // Random speed between -0.25 and 0.25
+      dy: (Math.random() - 0.5) * 0.5,
     }));
     setFishes(newFishes);
+    startAnimation();
+  };
+
+  const startAnimation = () => {
+    const animate = () => {
+      setFishes(prevFishes => prevFishes.map(fish => {
+        let newX = fish.x + fish.dx;
+        let newY = fish.y + fish.dy;
+
+        // Bounce off the edges
+        if (newX <= 0 || newX >= Dimensions.get('window').width - fish.width) {
+          fish.dx *= -1;
+          newX = fish.x + fish.dx;
+        }
+        if (newY <= Dimensions.get('window').height / 2 || newY >= Dimensions.get('window').height - fish.size) {
+          fish.dy *= -1;
+          newY = fish.y + fish.dy;
+        }
+
+        return { ...fish, x: newX, y: newY };
+      }));
+      animationRef.current = requestAnimationFrame(animate);
+    };
+    animate();
+  };
+
+  const cancelAnimation = () => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
   };
 
   const catchFish = (index) => {
