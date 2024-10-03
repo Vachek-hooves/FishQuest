@@ -1020,3 +1020,563 @@ export const quizBeginner = [
     ]
   }
 ]
+export const quizExpert = [
+  {
+    id: 1,
+    topic: "Fishing Gear",
+    questions: [
+      {
+        question: "Which fishing rod is best suited for catching large fish?",
+        options: ["Spinning rod", "Feeder rod", "Float rod"],
+        correctAnswer: "Feeder rod"
+      },
+      {
+        question: "What is the purpose of a float?",
+        options: ["To attract fish", "To hold the fish", "To indicate a bite"],
+        correctAnswer: "To indicate a bite"
+      },
+      {
+        question: "What material is most commonly used for making reels?",
+        options: ["Wood", "Metal", "Plastic"],
+        correctAnswer: "Metal"
+      },
+      {
+        question: "How does monofilament line differ from braided line?",
+        options: ["In color", "In thickness and strength", "They are the same"],
+        correctAnswer: "In thickness and strength"
+      },
+      {
+        question: "What is the part of the rod called where the line is attached?",
+        options: ["Reel", "Handle", "Guides"],
+        correctAnswer: "Reel"
+      },
+      {
+        question: "What is the purpose of a leader in fishing tackle?",
+        options: ["To extend the line", "To prevent the main line from breaking", "To increase casting distance"],
+        correctAnswer: "To prevent the main line from breaking"
+      },
+      {
+        question: "Which type of hook is best for catching predatory fish?",
+        options: ["Straight hooks", "Treble hooks", "Barbless hooks"],
+        correctAnswer: "Treble hooks"
+      },
+      {
+        question: "What type of line is best suited for long-distance casts?",
+        options: ["Braided line", "Monofilament line", "Fluorocarbon line"],
+        correctAnswer: "Braided line"
+      },
+      {
+        question: "Which tackle is used for fishing in currents?",
+        options: ["Float fishing", "Bottom fishing", "Spinning fishing"],
+        correctAnswer: "Bottom fishing"
+      },
+      {
+        question: "What hook size is considered ideal for carp fishing?",
+        options: ["Medium (size 6-8)", "Small (size 10-12)", "Very large (size 1-3)"],
+        correctAnswer: "Medium (size 6-8)"
+      }
+    ]
+  },
+  {
+    id: 2,
+    topic: "Types of Fish",
+    questions: [
+      {
+        question: "Which of these fish is a predator?",
+        options: ["Pike", "Carp", "Crucian carp"],
+        correctAnswer: "Pike"
+      },
+      {
+        question: "Which fish lives exclusively in saltwater?",
+        options: ["Bream", "Cod", "Crucian carp"],
+        correctAnswer: "Cod"
+      },
+      {
+        question: "What type of fish is most commonly caught in freshwater?",
+        options: ["Halibut", "Perch", "Salmon"],
+        correctAnswer: "Perch"
+      },
+      {
+        question: "Which type of fish inhabits rivers and lakes in Europe?",
+        options: ["Zander", "Sardine", "Shark"],
+        correctAnswer: "Zander"
+      },
+      {
+        question: "What is the largest freshwater fish in Russia?",
+        options: ["Beluga", "Carp", "Pike"],
+        correctAnswer: "Beluga"
+      },
+      {
+        question: "Which fish can climb waterfalls to spawn?",
+        options: ["Sturgeon", "Salmon", "Trout"],
+        correctAnswer: "Salmon"
+      },
+      {
+        question: "Which fish has a unique organ that emits an electric charge?",
+        options: ["Electric eel", "Pike", "Ray"],
+        correctAnswer: "Electric eel"
+      },
+      {
+        question: "Which of these fish is considered a delicacy in Japan?",
+        options: ["Tuna", "Fugu", "Salmon"],
+        correctAnswer: "Fugu"
+      },
+      {
+        question: "Which fish is known for its long migration cycle?",
+        options: ["Eel", "Cod", "Pike"],
+        correctAnswer: "Eel"
+      },
+      {
+        question: "What kind of fish prefers saltwater and feeds mainly on plankton?",
+        options: ["Herring", "Pike", "Catfish"],
+        correctAnswer: "Herring"
+      }
+    ]
+  },
+  {
+    id: 3,
+    topic: "Fishing Techniques",
+    questions: [
+      {
+        question: "What is the technique called when the bait is cast into the water and moved along the bottom?",
+        options: ["Drop-shot", "Trolling", "Float fishing"],
+        correctAnswer: "Drop-shot"
+      },
+      {
+        question: "Which fishing method is best used in murky water?",
+        options: ["Surface fishing", "Bottom fishing", "Splash fishing"],
+        correctAnswer: "Bottom fishing"
+      },
+      {
+        question: "Which method is best suited for fishing in shallow water?",
+        options: ["Float fishing", "Spinning", "Bottom fishing"],
+        correctAnswer: "Float fishing"
+      },
+      {
+        question: "What is the technique called when the angler walks along the shore, casting with a reel?",
+        options: ["Spinning", "Float fishing", "Trolling"],
+        correctAnswer: "Spinning"
+      },
+      {
+        question: "What action is important when fishing in a current?",
+        options: ["Constantly keeping the rod under tension", "Leaving the rod stationary", "Casting into shallow water"],
+        correctAnswer: "Constantly keeping the rod under tension"
+      },
+      {
+        question: "How is the best spot for fishing determined?",
+        options: ["By water color", "By the amount of weeds", "By finding underwater pits or snags"],
+        correctAnswer: "By finding underwater pits or snags"
+      },
+      {
+        question: "What is a \"pendulum cast\"?",
+        options: ["A type of cast along the shore", "A method of casting into the river against the current", "A cast with a reel"],
+        correctAnswer: "A method of casting into the river against the current"
+      },
+      {
+        question: "What is the most important factor when fishing for large fish?",
+        options: ["Using a long rod", "Properly adjusting the reel's drag", "Using light line"],
+        correctAnswer: "Properly adjusting the reel's drag"
+      },
+      {
+        question: "Which fishing method requires a boat?",
+        options: ["Bottom fishing", "Trolling", "Spinning"],
+        correctAnswer: "Trolling"
+      },
+      {
+        question: "What technique should be used for deep-water fishing?",
+        options: ["Deep bottom fishing", "Float fishing", "Trolling"],
+        correctAnswer: "Deep bottom fishing"
+      }
+    ]
+  },
+  {
+    id: 4,
+    topic: "Types of Bait",
+    questions: [
+      {
+        question: "What kind of bait is best for catching pike?",
+        options: ["Wobbler", "Worm", "Bread"],
+        correctAnswer: "Wobbler"
+      },
+      {
+        question: "What bait is often used for carp fishing?",
+        options: ["Boilies", "Wobbler", "Jig"],
+        correctAnswer: "Boilies"
+      },
+      {
+        question: "What bait is most effective for fishing in a current?",
+        options: ["Live bait", "Spinning lure", "Maggot"],
+        correctAnswer: "Spinning lure"
+      },
+      {
+        question: "What type of bait is best for ice fishing?",
+        options: ["Jig", "Wobbler", "Float"],
+        correctAnswer: "Jig"
+      },
+      {
+        question: "What bait is popular for catching perch?",
+        options: ["Soft plastic lures", "Bread", "Boilies"],
+        correctAnswer: "Soft plastic lures"
+      },
+      {
+        question: "What bait is often used to catch catfish?",
+        options: ["Live bait", "Bloodworm", "Lure"],
+        correctAnswer: "Live bait"
+      },
+      {
+        question: "What is a popular bait for catching trout?",
+        options: ["Boilies", "Fly", "Live bait"],
+        correctAnswer: "Fly"
+      },
+      {
+        question: "What bait is best for cod fishing?",
+        options: ["Jig", "Boilies", "Worm"],
+        correctAnswer: "Jig"
+      },
+      {
+        question: "Which type of artificial bait mimics the movement of an injured fish?",
+        options: ["Wobbler", "Live bait", "Jig"],
+        correctAnswer: "Wobbler"
+      },
+      {
+        question: "What bait is especially effective for night fishing?",
+        options: ["Glow-in-the-dark lure", "Bread", "Float"],
+        correctAnswer: "Glow-in-the-dark lure"
+      }
+    ]
+  },
+  {
+    id: 5,
+    topic: "Sea Fishing",
+    questions: [
+      {
+        question: "What fish is most commonly caught in sea fishing?",
+        options: ["Pike", "Tuna", "Carp"],
+        correctAnswer: "Tuna"
+      },
+      {
+        question: "What method is most often used in sea fishing?",
+        options: ["Float fishing", "Bottom fishing", "Trolling"],
+        correctAnswer: "Trolling"
+      },
+      {
+        question: "What gear is most commonly used for catching large fish in the sea?",
+        options: ["Sea rod", "Spinning rod", "Float"],
+        correctAnswer: "Sea rod"
+      },
+      {
+        question: "What bait is used for catching sharks?",
+        options: ["Wobbler", "Live bait", "Worm"],
+        correctAnswer: "Live bait"
+      },
+      {
+        question: "What time of day is most successful for sea fishing?",
+        options: ["Daytime", "Dawn and dusk", "Noon"],
+        correctAnswer: "Dawn and dusk"
+      },
+      {
+        question: "What type of fishing uses a long line with multiple hooks?",
+        options: ["Drifting", "Trolling", "Bottom fishing"],
+        correctAnswer: "Drifting"
+      },
+      {
+        question: "What sea fish is one of the most valuable commercial species?",
+        options: ["Herring", "Halibut", "Perch"],
+        correctAnswer: "Halibut"
+      },
+      {
+        question: "What type of reel is best for sea fishing?",
+        options: ["Light spinning reels", "Multiplier reels", "Float reels"],
+        correctAnswer: "Multiplier reels"
+      },
+      {
+        question: "What type of fishing is popular on coral reefs?",
+        options: ["Feeder fishing", "Spearfishing", "Trolling"],
+        correctAnswer: "Spearfishing"
+      },
+      {
+        question: "What fish is most commonly caught while trolling in the open sea?",
+        options: ["Marlin", "Carp", "Trout"],
+        correctAnswer: "Marlin"
+      }
+    ]
+  },
+  {
+    id: 6,
+    topic: "Winter Fishing",
+    questions: [
+      {
+        question: "What fish is most active in winter?",
+        options: ["Perch", "Carp", "Bream"],
+        correctAnswer: "Perch"
+      },
+      {
+        question: "What type of gear is most popular for winter fishing?",
+        options: ["Spinning rod", "Winter rod with a jig", "Bottom rig"],
+        correctAnswer: "Winter rod with a jig"
+      },
+      {
+        question: "What factor is most important when choosing a winter fishing spot?",
+        options: ["Ice thickness", "Depth of the body of water", "Presence of aquatic plants"],
+        correctAnswer: "Ice thickness"
+      },
+      {
+        question: "What bait is most popular for winter fishing?",
+        options: ["Wobbler", "Live bait", "Bloodworm"],
+        correctAnswer: "Bloodworm"
+      },
+      {
+        question: "What tool is essential for safe winter fishing?",
+        options: ["Ice auger", "Spinning rod", "Reel"],
+        correctAnswer: "Ice auger"
+      },
+      {
+        question: "What type of fish is caught using a jigging method in winter?",
+        options: ["Bream", "Pike", "Crucian carp"],
+        correctAnswer: "Pike"
+      },
+      {
+        question: "What winter fishing method requires active movement on the ice?",
+        options: ["Bottom fishing", "Jigging", "Float fishing"],
+        correctAnswer: "Jigging"
+      },
+      {
+        question: "What fish is often caught at night in winter?",
+        options: ["Zander", "Perch", "Bream"],
+        correctAnswer: "Zander"
+      },
+      {
+        question: "What bait is best used for catching roach in winter?",
+        options: ["Boilies", "Jig with bloodworm", "Worm"],
+        correctAnswer: "Jig with bloodworm"
+      },
+      {
+        question: "What is the name of the winter fishing method using a tent?",
+        options: ["Fishing with tip-ups", "Jigging", "Fishing with live bait"],
+        correctAnswer: "Fishing with tip-ups"
+      }
+    ]
+  },
+  {
+    id: 7,
+    topic: "River Fishing",
+    questions: [
+      {
+        question: "What fish is most commonly caught in fast-flowing rivers?",
+        options: ["Trout", "Pike", "Bream"],
+        correctAnswer: "Trout"
+      },
+      {
+        question: "What method is best suited for fishing in rivers?",
+        options: ["Bottom fishing", "Trolling", "Float fishing"],
+        correctAnswer: "Bottom fishing"
+      },
+      {
+        question: "What gear is best for fishing in mountain rivers?",
+        options: ["Float rod", "Spinning rod", "Feeder rod"],
+        correctAnswer: "Spinning rod"
+      },
+      {
+        question: "What bait is best for catching bream in the river?",
+        options: ["Wobbler", "Maggot", "Live bait"],
+        correctAnswer: "Maggot"
+      },
+      {
+        question: "What fish is often found in rapids and fast currents?",
+        options: ["Chub", "Crucian carp", "Roach"],
+        correctAnswer: "Chub"
+      },
+      {
+        question: "What method is effective for fishing in shaded areas of the river?",
+        options: ["Jigging", "Trolling", "Float fishing"],
+        correctAnswer: "Float fishing"
+      },
+      {
+        question: "What fish can be caught with a jig in rivers?",
+        options: ["Perch", "Catfish", "Pike"],
+        correctAnswer: "Perch"
+      },
+      {
+        question: "What gear should be used for catching carp in the river?",
+        options: ["Feeder rod", "Spinning rod", "Float rod"],
+        correctAnswer: "Feeder rod"
+      },
+      {
+        question: "What fish is known for its ability to survive in rivers with low oxygen levels?",
+        options: ["Catfish", "Pike", "Bream"],
+        correctAnswer: "Catfish"
+      },
+      {
+        question: "What type of rod is most suitable for long-distance casting in the river?",
+        options: ["Feeder rod", "Spinning rod", "Float rod"],
+        correctAnswer: "Feeder rod"
+      }
+    ]
+  },
+  {
+    id: 8,
+    topic: "Fishing Bait Techniques",
+    questions: [
+      {
+        question: "What is the purpose of bait in fishing?",
+        options: ["To attract fish to the fishing spot", "To keep the fish on the hook", "To lure predator fish"],
+        correctAnswer: "To attract fish to the fishing spot"
+      },
+      {
+        question: "What bait is best suited for catching crucian carp?",
+        options: ["Maggot", "A mixture of grains and corn", "Live bait"],
+        correctAnswer: "A mixture of grains and corn"
+      },
+      {
+        question: "What bait is best used in still waters?",
+        options: ["Light, fast-dissolving bait", "Heavy and sticky bait", "Bait with a meaty smell"],
+        correctAnswer: "Light, fast-dissolving bait"
+      },
+      {
+        question: "What bait is most often used for feeder fishing?",
+        options: ["A mixture of grains and oilcake", "Live bait", "Maggot"],
+        correctAnswer: "A mixture of grains and oilcake"
+      },
+      {
+        question: "What ingredient helps make bait stickier?",
+        options: ["Clay", "Sugar", "Corn flour"],
+        correctAnswer: "Clay"
+      },
+      {
+        question: "What ingredient is often added to bait to enhance the aroma?",
+        options: ["Anise", "Salt", "Lemon"],
+        correctAnswer: "Anise"
+      },
+      {
+        question: "What bait is most effective for catching roach?",
+        options: ["Mixture with ground biscuits", "Live bait", "Bread"],
+        correctAnswer: "Mixture with ground biscuits"
+      },
+      {
+        question: "What bait is best used for fishing in currents?",
+        options: ["Heavy and sticky bait", "Light bait", "Bait with a fruity smell"],
+        correctAnswer: "Heavy and sticky bait"
+      },
+      {
+        question: "What bait can be used for catching catfish?",
+        options: ["Mixture with fishmeal", "Maggot", "Corn kernels"],
+        correctAnswer: "Mixture with fishmeal"
+      },
+      {
+        question: "What bait is used for catching large carp?",
+        options: ["Boilies", "Bread crumbs", "Bloodworm"],
+        correctAnswer: "Boilies"
+      }
+    ]
+  },{
+    id: 9,
+    topic: "Spinning Fishing",
+    questions: [
+      {
+        question: "Which fish is most suitable for spinning fishing?",
+        options: ["Pike", "Crucian Carp", "Bream"],
+        correctAnswer: "Pike"
+      },
+      {
+        question: "What type of lure is most commonly used in spinning fishing?",
+        options: ["Wobbler", "Maggot", "Boilies"],
+        correctAnswer: "Wobbler"
+      },
+      {
+        question: "What factor is important when choosing a reel for spinning fishing?",
+        options: ["Gear ratio", "Line color", "Rod length"],
+        correctAnswer: "Gear ratio"
+      },
+      {
+        question: "What lure should be used for perch when spinning fishing?",
+        options: ["Soft baits", "Live bait", "Maggot"],
+        correctAnswer: "Soft baits"
+      },
+      {
+        question: "What type of line is most popular for spinning fishing?",
+        options: ["Braided line", "Monofilament line", "Fluorocarbon"],
+        correctAnswer: "Braided line"
+      },
+      {
+        question: "What casting method is best for spinning fishing?",
+        options: ["Long cast", "Side cast", "Precision cast"],
+        correctAnswer: "Long cast"
+      },
+      {
+        question: "What fish is often caught with a spinnerbait during spinning fishing?",
+        options: ["Zander", "Roach", "Bream"],
+        correctAnswer: "Zander"
+      },
+      {
+        question: "What type of lure often mimics the behavior of an injured fish in spinning fishing?",
+        options: ["Wobbler", "Live bait", "Boilies"],
+        correctAnswer: "Wobbler"
+      },
+      {
+        question: "What type of rod is suitable for spinning fishing?",
+        options: ["Light and flexible rod", "Stiff and short rod", "Heavy and long rod"],
+        correctAnswer: "Light and flexible rod"
+      },
+      {
+        question: "What type of reel is best for pike spinning fishing?",
+        options: ["Baitcasting reel", "Lightweight float reel", "Drum reel"],
+        correctAnswer: "Baitcasting reel"
+      }
+    ]
+  },{
+    id: 10,
+    topic: "Bottom Fishing",
+    questions: [
+      {
+        question: "Which fish is most suitable for bottom fishing?",
+        options: ["Bream", "Pike", "Trout"],
+        correctAnswer: "Bream"
+      },
+      {
+        question: "What type of tackle is usually used for bottom fishing?",
+        options: ["Sinker with hook and bait", "Float and line", "Swivel and spinnerbait"],
+        correctAnswer: "Sinker with hook and bait"
+      },
+      {
+        question: "What factor is most important when choosing a spot for bottom fishing?",
+        options: ["Water depth", "Water color", "Time of day"],
+        correctAnswer: "Water depth"
+      },
+      {
+        question: "What bait is most commonly used for carp when bottom fishing?",
+        options: ["Boilies", "Worms", "Bread"],
+        correctAnswer: "Boilies"
+      },
+      {
+        question: "What tackle should be used for catfish when bottom fishing?",
+        options: ["Heavy rod with a large reel", "Light rod with a small reel", "Spinning rod"],
+        correctAnswer: "Heavy rod with a large reel"
+      },
+      {
+        question: "What bait should be used for large bream when bottom fishing?",
+        options: ["Maggot with corn", "Live bait", "Boilies"],
+        correctAnswer: "Maggot with corn"
+      },
+      {
+        question: "What type of hooks are best for bottom fishing?",
+        options: ["Large single hooks", "Small treble hooks", "Double hooks"],
+        correctAnswer: "Large single hooks"
+      },
+      {
+        question: "What feeding method is effective for bottom fishing?",
+        options: ["Groundbait balls", "Swivels", "Live bait"],
+        correctAnswer: "Groundbait balls"
+      },
+      {
+        question: "What fish is most commonly caught using bottom fishing in lakes?",
+        options: ["Bream", "Perch", "Pike"],
+        correctAnswer: "Bream"
+      },
+      {
+        question: "What type of groundbait should be used for bottom fishing in slow-moving waters?",
+        options: ["Sticky and heavy groundbait", "Light and quickly dissolving", "Dry and crumbly"],
+        correctAnswer: "Sticky and heavy groundbait"
+      }
+    ]
+  }
+]
