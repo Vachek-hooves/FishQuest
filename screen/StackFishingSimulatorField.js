@@ -9,10 +9,16 @@ const StackFishingSimulatorField = ({ route }) => {
   const [caughtFish, setCaughtFish] = useState([]);
   const animationRef = useRef();
   const seasonFishRef = useRef([]);
+  const regenerationTimerRef = useRef(null);
 
   useEffect(() => {
     generateFishes();
-    return () => cancelAnimation();
+    return () => {
+      cancelAnimation();
+      if (regenerationTimerRef.current) {
+        clearTimeout(regenerationTimerRef.current);
+      }
+    };
   }, []);
 
   const generateFishes = useCallback(() => {
@@ -74,6 +80,16 @@ const StackFishingSimulatorField = ({ route }) => {
     }
   }, [fishes]);
 
+  const regenerateFish = useCallback(() => {
+    if (regenerationTimerRef.current) {
+      clearTimeout(regenerationTimerRef.current);
+    }
+    regenerationTimerRef.current = setTimeout(() => {
+      respawnFish();
+      regenerationTimerRef.current = null;
+    }, 2000);
+  }, [respawnFish]);
+
   const catchFish = useCallback((index) => {
     const caughtFish = fishes[index];
     console.log(`Caught fish: ${caughtFish.name}`);
@@ -83,7 +99,8 @@ const StackFishingSimulatorField = ({ route }) => {
       return updatedFishes;
     });
     respawnFish();
-  }, [fishes, respawnFish]);
+    regenerateFish();
+  }, [fishes, respawnFish, regenerateFish]);
 
   const CaughtFishDisplay = useMemo(() => {
     return () => (
