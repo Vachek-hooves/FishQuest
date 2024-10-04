@@ -11,6 +11,7 @@ const StackFishingSimulatorField = ({ route }) => {
   const IMAGE = season.image;
   const [fishes, setFishes] = useState([]);
   const [caughtFish, setCaughtFish] = useState([]);
+  const [score, setScore] = useState(0);
   const animationRef = useRef();
   const seasonFishRef = useRef([]);
   const regenerationQueueRef = useRef([]);
@@ -125,7 +126,7 @@ const StackFishingSimulatorField = ({ route }) => {
         console.log("Fish no longer exists");
         return prevFishes;
       }
-
+  
       const caughtFish = prevFishes[index];
       const originalFish = fishData.find(f => f.id === caughtFish.id);
       
@@ -133,16 +134,27 @@ const StackFishingSimulatorField = ({ route }) => {
         console.log("Original fish data not found");
         return prevFishes;
       }
-
+  
       console.log(`Caught fish: ${originalFish.name}`);
+      
       setCaughtFish(prev => [...prev, originalFish]);
-
+  
+      setScore(prevScore => {
+        let newScore = prevScore;
+        if (season.task === 'predator') {
+          newScore += originalFish.type === 'predator' ? 20 : -10;
+        } else if (season.task === 'prey') {
+          newScore += originalFish.type === 'prey' ? 20 : -10;
+        }
+        return Math.max(newScore, 0); // Ensure score doesn't go below 0
+      });
+  
       Animated.timing(caughtFish.opacity, {
         toValue: 0,
         duration: ANIMATION_DURATION,
         useNativeDriver: true,
       }).start();
-
+  
       const updatedFishes = prevFishes.filter((_, i) => i !== index);
       
       if (updatedFishes.length < MIN_FISH) {
@@ -150,10 +162,10 @@ const StackFishingSimulatorField = ({ route }) => {
       }
       
       queueFishRegeneration();
-
+  
       return updatedFishes;
     });
-  }, [respawnFish, queueFishRegeneration]);
+  }, [respawnFish, queueFishRegeneration, season.task]);
 
   const CaughtFishDisplay = useMemo(() => {
     const groupedFish = caughtFish.reduce((acc, fish) => {
@@ -166,7 +178,10 @@ const StackFishingSimulatorField = ({ route }) => {
 
     return () => (
       <View style={styles.caughtFishContainer}>
-        <SafeAreaView></SafeAreaView>
+        <SafeAreaView>
+          <Text style={styles.scoreText}>Score: {score}</Text>
+          <Text style={styles.taskText}>Task: Catch {season.task}</Text>
+        </SafeAreaView>
         <Text style={styles.caughtFishTitle}>Caught Fish:</Text>
         <View style={styles.tableHeader}>
           <Text style={[styles.headerCell, styles.imageCell]}>Fish</Text>
@@ -186,7 +201,7 @@ const StackFishingSimulatorField = ({ route }) => {
         </ScrollView>
       </View>
     );
-  }, [caughtFish]);
+  }, [caughtFish, score, season.task]);
 
   return (
     <View style={styles.container}>
@@ -273,6 +288,15 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     resizeMode: 'contain',
+  },
+  scoreText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  taskText: {
+    fontSize: 16,
+    marginBottom: 5,
   },
 });
 
