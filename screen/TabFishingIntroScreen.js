@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,40 +11,79 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useContextProvider } from '../store/context';
 
 const TabFishingIntroScreen = ({ navigation }) => {
-  const { fishSeason } = useContextProvider();
+  const { fishSeason, totalScore, getTotalScore } = useContextProvider();
+
+  useEffect(() => {
+    const fetchTotalScore = async () => {
+      await getTotalScore();
+    };
+    fetchTotalScore();
+  }, []);
 
   const handleSeasonPress = (season) => {
     navigation.navigate('StackFishingSimulatorField', { season });
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <SafeAreaView></SafeAreaView>
-      <View style={{ marginHorizontal: 20 }}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {fishSeason && fishSeason.map((season, index) => (
-            <TouchableOpacity
-              onPress={() => handleSeasonPress(season)}
-              key={index}
-              style={{
-                width: '100%',
-                height: 200,
-                marginVertical: 20,
-                borderRadius: 10,
-                overflow: 'hidden',
-              }}>
-              <ImageBackground source={season.image} style={{ flex: 1 }}>
-                <Text>{season.season}</Text>
-              </ImageBackground>
-            </TouchableOpacity>
-          ))}
-          <View style={{ height: 100 }}></View>
-        </ScrollView>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Total Score: {totalScore}</Text>
       </View>
-    </View>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+        {fishSeason && fishSeason.map((season, index) => (
+          <TouchableOpacity
+            onPress={() => handleSeasonPress(season)}
+            key={index}
+            style={styles.seasonButton}>
+            <ImageBackground source={season.image} style={styles.seasonImage}>
+              <Text style={styles.seasonText}>{season.season}</Text>
+            </ImageBackground>
+          </TouchableOpacity>
+        ))}
+        <View style={{ height: 100 }}></View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
-export default TabFishingIntroScreen;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+  },
+  header: {
+    backgroundColor: '#4a90e2',
+    padding: 15,
+    alignItems: 'center',
+  },
+  headerText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  scrollView: {
+    marginHorizontal: 20,
+  },
+  seasonButton: {
+    width: '100%',
+    height: 200,
+    marginVertical: 20,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  seasonImage: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  seasonText: {
+    fontSize: 24,
+    color: 'white',
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: {width: -1, height: 1},
+    textShadowRadius: 10,
+  },
+});
 
-const styles = StyleSheet.create({});
+export default TabFishingIntroScreen;
