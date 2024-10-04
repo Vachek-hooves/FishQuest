@@ -7,9 +7,9 @@ export const fishSeason = [
   },
   {task:'prey',
     season: 'summer',
-    fish: ['2', '4', '5','13','20','21'],
+    fish: ['1', '4', '8','10','20','21'],
     image: require('../assets/image/seasons/summer.jpg'),
-    status: true
+    status: false
   },
   {task:'predator',
     season: 'autumn',
