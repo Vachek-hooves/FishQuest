@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Dimensions, ImageBackground } from 'react-native';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { StyleSheet, View, Image, TouchableOpacity, Dimensions, ImageBackground, Text, ScrollView } from 'react-native';
 import { fishData } from '../data/fishData';
 
 const StackFishingSimulatorField = ({ route }) => {
   const { season } = route.params;
   const IMAGE = season.image;
   const [fishes, setFishes] = useState([]);
+  const [caughtFish, setCaughtFish] = useState([]);
   const animationRef = useRef();
 
   useEffect(() => {
@@ -14,7 +15,6 @@ const StackFishingSimulatorField = ({ route }) => {
   }, []);
 
   const generateFishes = () => {
-    // Filter fish based on the season
     const seasonFish = fishData.filter(fish => season.fish.includes(fish.id.toString()));
     
     const newFishes = seasonFish.map(fish => ({
@@ -28,7 +28,7 @@ const StackFishingSimulatorField = ({ route }) => {
     startAnimation();
   };
 
-  const startAnimation = () => {
+  const startAnimation = useCallback(() => {
     const animate = () => {
       setFishes(prevFishes => prevFishes.map(fish => {
         let newX = fish.x + fish.dx;
@@ -49,27 +49,48 @@ const StackFishingSimulatorField = ({ route }) => {
       animationRef.current = requestAnimationFrame(animate);
     };
     animate();
-  };
+  }, []);
 
-  const cancelAnimation = () => {
+  const cancelAnimation = useCallback(() => {
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
-  };
+  }, []);
 
-  const catchFish = (index) => {
-    console.log(`Caught fish: ${fishes[index].name}`);
-    const updatedFishes = [...fishes];
-    updatedFishes.splice(index, 1);
-    setFishes(updatedFishes);
-  };
+  const catchFish = useCallback((index) => {
+    const caughtFish = fishes[index];
+    console.log(`Caught fish: ${caughtFish.name}`);
+    setCaughtFish(prev => [...prev, caughtFish]);
+    setFishes(prevFishes => {
+      const updatedFishes = [...prevFishes];
+      updatedFishes.splice(index, 1);
+      return updatedFishes;
+    });
+  }, [fishes]);
+
+  const CaughtFishDisplay = useMemo(() => {
+    return () => (
+      <View style={styles.caughtFishContainer}>
+        <Text style={styles.caughtFishTitle}>Caught Fish:</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {caughtFish.map((fish, index) => (
+            <View key={index} style={styles.caughtFishItem}>
+              <Image source={fish.image} style={styles.caughtFishImage} />
+              <Text style={styles.caughtFishName}>{fish.name}</Text>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+    );
+  }, [caughtFish]);
 
   return (
     <View style={styles.container}>
       <ImageBackground source={IMAGE} style={styles.lake}>
+        <CaughtFishDisplay />
         {fishes.map((fish, index) => (
           <TouchableOpacity
-            key={index}
+            key={fish.id}
             style={[styles.fish, { left: fish.x, top: fish.y }]}
             onPress={() => catchFish(index)}
           >
@@ -81,19 +102,42 @@ const StackFishingSimulatorField = ({ route }) => {
   );
 };
 
-export default StackFishingSimulatorField;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   lake: {
-    // height: Dimensions.get('window').height / 2,
+    flex: 1,
     backgroundColor: '#87CEEB',
     position: 'relative',
-    flex: 1,
   },
   fish: {
     position: 'absolute',
   },
+  caughtFishContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  caughtFishTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  caughtFishItem: {
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  caughtFishImage: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+  },
+  caughtFishName: {
+    fontSize: 12,
+    textAlign: 'center',
+  },
 });
+
+export default StackFishingSimulatorField;
