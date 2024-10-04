@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { StyleSheet, View, Image, TouchableOpacity, Dimensions, ImageBackground, Text, ScrollView, Animated } from 'react-native';
 import { fishData } from '../data/fishData';
 
-const ANIMATION_DURATION = 500; // Duration of fade in/out animation in milliseconds
+const ANIMATION_DURATION = 500;
+const MAX_FISH = 6;
 
 const StackFishingSimulatorField = ({ route }) => {
   const { season } = route.params;
@@ -11,29 +12,38 @@ const StackFishingSimulatorField = ({ route }) => {
   const [caughtFish, setCaughtFish] = useState([]);
   const animationRef = useRef();
   const seasonFishRef = useRef([]);
-  const regenerationTimerRef = useRef(null);
+  const regenerationQueueRef = useRef([]);
+  const fishIdCounterRef = useRef(0);
 
   useEffect(() => {
     generateFishes();
     return () => {
       cancelAnimation();
-      if (regenerationTimerRef.current) {
-        clearTimeout(regenerationTimerRef.current);
-      }
+      regenerationQueueRef.current.forEach(clearTimeout);
     };
   }, []);
+
+  const getNextFishId = useCallback(() => {
+    fishIdCounterRef.current += 1;
+    return `fish_${fishIdCounterRef.current}`;
+  }, []);
+
+  const createFish = useCallback((baseFish) => {
+    return {
+      ...baseFish,
+      uniqueId: getNextFishId(),
+      x: Math.random() * (Dimensions.get('window').width - baseFish.width),
+      y: Math.random() * (Dimensions.get('window').height / 2 - baseFish.height) + Dimensions.get('window').height / 2,
+      dx: (Math.random() - 0.5) * 0.5,
+      dy: (Math.random() - 0.5) * 0.5,
+      opacity: new Animated.Value(0),
+    };
+  }, [getNextFishId]);
 
   const generateFishes = useCallback(() => {
     seasonFishRef.current = fishData.filter(fish => season.fish.includes(fish.id.toString()));
     
-    const newFishes = seasonFishRef.current.slice(0, 6).map(fish => ({
-      ...fish,
-      x: Math.random() * (Dimensions.get('window').width - fish.width),
-      y: Math.random() * (Dimensions.get('window').height / 2 - fish.height) + Dimensions.get('window').height / 2,
-      dx: (Math.random() - 0.5) * 0.5,
-      dy: (Math.random() - 0.5) * 0.5,
-      opacity: new Animated.Value(0),
-    }));
+    const newFishes = seasonFishRef.current.slice(0, MAX_FISH).map(fish => createFish(fish));
     setFishes(newFishes);
     newFishes.forEach(fish => {
       Animated.timing(fish.opacity, {
@@ -43,7 +53,7 @@ const StackFishingSimulatorField = ({ route }) => {
       }).start();
     });
     startAnimation();
-  }, [season]);
+  }, [season, createFish]);
 
   const startAnimation = useCallback(() => {
     const animate = () => {
@@ -75,17 +85,10 @@ const StackFishingSimulatorField = ({ route }) => {
   }, []);
 
   const respawnFish = useCallback(() => {
-    if (fishes.length < 6 && seasonFishRef.current.length > 0) {
+    if (fishes.length < MAX_FISH && seasonFishRef.current.length > 0) {
       const availableFish = seasonFishRef.current.filter(fish => !fishes.some(f => f.id === fish.id));
       if (availableFish.length > 0) {
-        const newFish = {
-          ...availableFish[Math.floor(Math.random() * availableFish.length)],
-          x: Math.random() * (Dimensions.get('window').width - 60),
-          y: Math.random() * (Dimensions.get('window').height / 2 - 30) + Dimensions.get('window').height / 2,
-          dx: (Math.random() - 0.5) * 0.5,
-          dy: (Math.random() - 0.5) * 0.5,
-          opacity: new Animated.Value(0),
-        };
+        const newFish = createFish(availableFish[Math.floor(Math.random() * availableFish.length)]);
         setFishes(prevFishes => [...prevFishes, newFish]);
         Animated.timing(newFish.opacity, {
           toValue: 1,
@@ -94,16 +97,14 @@ const StackFishingSimulatorField = ({ route }) => {
         }).start();
       }
     }
-  }, [fishes]);
+  }, [fishes, createFish]);
 
-  const regenerateFish = useCallback(() => {
-    if (regenerationTimerRef.current) {
-      clearTimeout(regenerationTimerRef.current);
-    }
-    regenerationTimerRef.current = setTimeout(() => {
+  const queueFishRegeneration = useCallback(() => {
+    const timerId = setTimeout(() => {
       respawnFish();
-      regenerationTimerRef.current = null;
+      regenerationQueueRef.current = regenerationQueueRef.current.filter(id => id !== timerId);
     }, 2000);
+    regenerationQueueRef.current.push(timerId);
   }, [respawnFish]);
 
   const catchFish = useCallback((index) => {
@@ -120,9 +121,9 @@ const StackFishingSimulatorField = ({ route }) => {
       if (fishes.length <= 3) {
         respawnFish();
       }
-      regenerateFish();
+      queueFishRegeneration();
     });
-  }, [fishes, respawnFish, regenerateFish]);
+  }, [fishes, respawnFish, queueFishRegeneration]);
 
   const CaughtFishDisplay = useMemo(() => {
     return () => (
@@ -146,7 +147,7 @@ const StackFishingSimulatorField = ({ route }) => {
         <CaughtFishDisplay />
         {fishes.map((fish, index) => (
           <Animated.View
-            key={fish.id}
+            key={fish.uniqueId}
             style={[
               styles.fish,
               {
