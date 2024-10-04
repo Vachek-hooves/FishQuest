@@ -11,6 +11,7 @@ export const ContextProvider = ({children}) => {
   const [expertQuiz, setExpertQuiz] = useState(null);
   const [fishData, setFishData] = useState(null);
   const [fishSeason, setFishSeason] = useState(null);
+  const [totalScore, setTotalScore] = useState(0);
 
   useEffect(() => {
     const initData = async () => {
@@ -35,6 +36,15 @@ export const ContextProvider = ({children}) => {
           await AsyncStorage.setItem('fishSeason', JSON.stringify(initialFishSeason));
           setFishSeason(initialFishSeason);
         }
+
+        // Initialize total score
+        const storedTotalScore = await AsyncStorage.getItem('totalScore');
+        if (storedTotalScore) {
+          setTotalScore(parseInt(storedTotalScore, 10));
+        } else {
+          await AsyncStorage.setItem('totalScore', '0');
+          setTotalScore(0);
+        }
       } catch (error) {
         console.error('Error initializing data:', error);
       }
@@ -42,6 +52,36 @@ export const ContextProvider = ({children}) => {
 
     initData();
   }, []);
+
+  const getTotalScore = async () => {
+    try {
+      const storedTotalScore = await AsyncStorage.getItem('totalScore');
+      return storedTotalScore ? parseInt(storedTotalScore, 10) : 0;
+    } catch (error) {
+      console.error('Error getting total score:', error);
+      return 0;
+    }
+  };
+
+  const setTotalScoreAsync = async (score) => {
+    try {
+      await AsyncStorage.setItem('totalScore', score.toString());
+      setTotalScore(score);
+    } catch (error) {
+      console.error('Error setting total score:', error);
+    }
+  };
+
+  const updateTotalScore = async (increment) => {
+    try {
+      const currentScore = await getTotalScore();
+      const newScore = Math.max(currentScore + increment, 0); // Ensure score doesn't go below 0
+      await setTotalScoreAsync(newScore);
+      return newScore;
+    } catch (error) {
+      console.error('Error updating total score:', error);
+    }
+  };
 
   const value = {
     beginnerQuiz,
@@ -52,6 +92,10 @@ export const ContextProvider = ({children}) => {
     setFishData,
     fishSeason,
     setFishSeason,
+    totalScore,
+    getTotalScore,
+    setTotalScore: setTotalScoreAsync,
+    updateTotalScore,
   };
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

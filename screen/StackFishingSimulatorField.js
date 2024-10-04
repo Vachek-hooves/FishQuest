@@ -8,7 +8,7 @@ const MIN_FISH = 3;
 
 const StackFishingSimulatorField = ({ route }) => {
   const { season } = route.params;
-  const { fishData } = useContextProvider();
+  const { fishData, updateTotalScore } = useContextProvider();
   const IMAGE = season.image;
   const [fishes, setFishes] = useState([]);
   const [caughtFish, setCaughtFish] = useState([]);
@@ -140,14 +140,20 @@ const StackFishingSimulatorField = ({ route }) => {
       
       setCaughtFish(prev => [...prev, originalFish]);
   
+      // Update local score
       setScore(prevScore => {
-        let newScore = prevScore;
+        let scoreIncrement = 0;
         if (season.task === 'predator') {
-          newScore += originalFish.type === 'predator' ? 20 : -10;
+          scoreIncrement = originalFish.type === 'predator' ? 20 : -10;
         } else if (season.task === 'prey') {
-          newScore += originalFish.type === 'prey' ? 20 : -10;
+          scoreIncrement = originalFish.type === 'prey' ? 20 : -10;
         }
-        return Math.max(newScore, 0); // Ensure score doesn't go below 0
+        const newScore = Math.max(prevScore + scoreIncrement, 0);
+        
+        // Update total score in context
+        updateTotalScore(scoreIncrement);
+
+        return newScore;
       });
   
       Animated.timing(caughtFish.opacity, {
@@ -166,7 +172,7 @@ const StackFishingSimulatorField = ({ route }) => {
   
       return updatedFishes;
     });
-  }, [respawnFish, queueFishRegeneration, season.task]);
+  }, [fishData, season.task, updateTotalScore]);
 
   const CaughtFishDisplay = useMemo(() => {
     const groupedFish = caughtFish.reduce((acc, fish) => {
