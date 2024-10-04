@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Dimensions, ImageBackground, Text, ScrollView, Animated } from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity, Dimensions, ImageBackground, Text, ScrollView, Animated, SafeAreaView } from 'react-native';
 import { fishData } from '../data/fishData';
 
 const ANIMATION_DURATION = 500;
@@ -115,29 +115,43 @@ const StackFishingSimulatorField = ({ route }) => {
     const timerId = setTimeout(() => {
       respawnFish();
       regenerationQueueRef.current = regenerationQueueRef.current.filter(id => id !== timerId);
-    }, 2000);
+    }, 4000);
     regenerationQueueRef.current.push(timerId);
   }, [respawnFish]);
 
   const catchFish = useCallback((index) => {
-    const caughtFish = fishes[index];
-    const originalFish = fishData.find(f => f.id === caughtFish.id);
-    console.log(`Caught fish: ${originalFish.name}`);
-    setCaughtFish(prev => [...prev, originalFish]);
-    
-    Animated.timing(caughtFish.opacity, {
-      toValue: 0,
-      duration: ANIMATION_DURATION,
-      useNativeDriver: true,
-    }).start(() => {
-      setFishes(prevFishes => {
-        const updatedFishes = prevFishes.filter((_, i) => i !== index);
-        if (updatedFishes.length < MIN_FISH) {
-          respawnFish();
-        }
-        return updatedFishes;
-      });
+    setFishes(prevFishes => {
+      if (index >= prevFishes.length) {
+        console.log("Fish no longer exists");
+        return prevFishes;
+      }
+
+      const caughtFish = prevFishes[index];
+      const originalFish = fishData.find(f => f.id === caughtFish.id);
+      
+      if (!originalFish) {
+        console.log("Original fish data not found");
+        return prevFishes;
+      }
+
+      console.log(`Caught fish: ${originalFish.name}`);
+      setCaughtFish(prev => [...prev, originalFish]);
+
+      Animated.timing(caughtFish.opacity, {
+        toValue: 0,
+        duration: ANIMATION_DURATION,
+        useNativeDriver: true,
+      }).start();
+
+      const updatedFishes = prevFishes.filter((_, i) => i !== index);
+      
+      if (updatedFishes.length < MIN_FISH) {
+        respawnFish();
+      }
+      
       queueFishRegeneration();
+
+      return updatedFishes;
     });
   }, [respawnFish, queueFishRegeneration]);
 
@@ -152,19 +166,23 @@ const StackFishingSimulatorField = ({ route }) => {
 
     return () => (
       <View style={styles.caughtFishContainer}>
+        <SafeAreaView></SafeAreaView>
         <Text style={styles.caughtFishTitle}>Caught Fish:</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View style={styles.caughtFishTable}>
-            {Object.values(groupedFish).map((fish) => (
-              <View key={fish.id} style={styles.caughtFishRow}>
+        <View style={styles.tableHeader}>
+          <Text style={[styles.headerCell, styles.imageCell]}>Fish</Text>
+          <Text style={[styles.headerCell, styles.nameCell]}>Name</Text>
+          <Text style={[styles.headerCell, styles.countCell]}>Count</Text>
+        </View>
+        <ScrollView style={styles.tableBody}>
+          {Object.values(groupedFish).map((fish) => (
+            <View key={fish.id} style={styles.tableRow}>
+              <View style={styles.imageCell}>
                 <Image source={fish.image} style={styles.caughtFishImage} />
-                <View style={styles.caughtFishInfo}>
-                  <Text style={styles.caughtFishName}>{fish.name}</Text>
-                  <Text style={styles.caughtFishCount}>x{fish.count}</Text>
-                </View>
               </View>
-            ))}
-          </View>
+              <Text style={styles.nameCell}>{fish.name}</Text>
+              <Text style={styles.countCell}>{fish.count}</Text>
+            </View>
+          ))}
         </ScrollView>
       </View>
     );
@@ -209,41 +227,52 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   caughtFishContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    backgroundColor: 'rgba(255, 255, 255, 0.4)',
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+    maxHeight: '40%', // Adjust this value as needed
   },
   caughtFishTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  caughtFishTable: {
+  tableHeader: {
     flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingBottom: 5,
+    marginBottom: 5,
   },
-  caughtFishRow: {
+  headerCell: {
+    fontWeight: 'bold',
+  },
+  tableBody: {
+    flexGrow: 0,
+  },
+  tableRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 15,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    borderRadius: 10,
-    padding: 5,
+    paddingVertical: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  imageCell: {
+    width: '25%',
+    alignItems: 'center',
+  },
+  nameCell: {
+    width: '50%',
+  },
+  countCell: {
+    width: '25%',
+    textAlign: 'center',
   },
   caughtFishImage: {
     width: 40,
     height: 40,
     resizeMode: 'contain',
-  },
-  caughtFishInfo: {
-    marginLeft: 5,
-  },
-  caughtFishName: {
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  caughtFishCount: {
-    fontSize: 12,
   },
 });
 
