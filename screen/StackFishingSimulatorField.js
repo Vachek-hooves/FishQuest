@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity, Dimensions, ImageBackground, Text, ScrollView, Animated, SafeAreaView } from 'react-native';
-import { fishData } from '../data/fishData';
+import { useContextProvider } from '../store/context';
 
 const ANIMATION_DURATION = 500;
 const MAX_FISH = 6;
@@ -8,6 +8,7 @@ const MIN_FISH = 3;
 
 const StackFishingSimulatorField = ({ route }) => {
   const { season } = route.params;
+  const { fishData } = useContextProvider();
   const IMAGE = season.image;
   const [fishes, setFishes] = useState([]);
   const [caughtFish, setCaughtFish] = useState([]);

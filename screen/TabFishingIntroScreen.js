@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,22 +7,22 @@ import {
   ImageBackground,
   ScrollView,
 } from 'react-native';
-import {fishSeason} from '../data/season';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useContextProvider } from '../store/context';
 
-const TabFishingIntroScreen = ({navigation}) => {
+const TabFishingIntroScreen = ({ navigation }) => {
+  const { fishSeason } = useContextProvider();
 
   const handleSeasonPress = (season) => {
-    navigation.navigate('StackFishingSimulatorField', {season});
+    navigation.navigate('StackFishingSimulatorField', { season });
   };
+
   return (
-    <View style={{flex: 1}}>
-      
+    <View style={{ flex: 1 }}>
       <SafeAreaView></SafeAreaView>
-      
-      <View style={{marginHorizontal: 20}}>
+      <View style={{ marginHorizontal: 20 }}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          {fishSeason.map((season, index) => (
+          {fishSeason && fishSeason.map((season, index) => (
             <TouchableOpacity
               onPress={() => handleSeasonPress(season)}
               key={index}
@@ -31,14 +32,13 @@ const TabFishingIntroScreen = ({navigation}) => {
                 marginVertical: 20,
                 borderRadius: 10,
                 overflow: 'hidden',
-                // marginHorizontal: 20,
               }}>
-              <ImageBackground source={season.image} style={{flex: 1}}>
+              <ImageBackground source={season.image} style={{ flex: 1 }}>
                 <Text>{season.season}</Text>
               </ImageBackground>
             </TouchableOpacity>
           ))}
-        <View style={{height: 100}}></View>
+          <View style={{ height: 100 }}></View>
         </ScrollView>
       </View>
     </View>
