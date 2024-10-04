@@ -9,8 +9,8 @@ export const Context = createContext();
 export const ContextProvider = ({children}) => {
   const [beginnerQuiz, setBeginnerQuiz] = useState(null);
   const [expertQuiz, setExpertQuiz] = useState(null);
-  const [fishData, setFishData] = useState(null);
-  const [fishSeason, setFishSeason] = useState(null);
+  const [fishData, setFishData] = useState(initialFishData);
+  const [fishSeason, setFishSeason] = useState(initialFishSeason);
   const [totalScore, setTotalScore] = useState(0);
 
   useEffect(() => {
@@ -18,24 +18,6 @@ export const ContextProvider = ({children}) => {
       try {
         // Initialize quizzes (as before)
         // ... (keep the existing quiz initialization code)
-
-        // Initialize fish data
-        const storedFishData = await AsyncStorage.getItem('fishData');
-        if (storedFishData) {
-          setFishData(JSON.parse(storedFishData));
-        } else {
-          await AsyncStorage.setItem('fishData', JSON.stringify(initialFishData));
-          setFishData(initialFishData);
-        }
-
-        // Initialize fish season data
-        const storedFishSeason = await AsyncStorage.getItem('fishSeason');
-        if (storedFishSeason) {
-          setFishSeason(JSON.parse(storedFishSeason));
-        } else {
-          await AsyncStorage.setItem('fishSeason', JSON.stringify(initialFishSeason));
-          setFishSeason(initialFishSeason);
-        }
 
         // Initialize total score
         const storedTotalScore = await AsyncStorage.getItem('totalScore');
