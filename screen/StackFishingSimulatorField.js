@@ -4,6 +4,7 @@ import { fishData } from '../data/fishData';
 
 const ANIMATION_DURATION = 500;
 const MAX_FISH = 6;
+const MIN_FISH = 3;
 
 const StackFishingSimulatorField = ({ route }) => {
   const { season } = route.params;
@@ -43,7 +44,11 @@ const StackFishingSimulatorField = ({ route }) => {
   const generateFishes = useCallback(() => {
     seasonFishRef.current = fishData.filter(fish => season.fish.includes(fish.id.toString()));
     
-    const newFishes = seasonFishRef.current.slice(0, MAX_FISH).map(fish => createFish(fish));
+    const newFishes = Array(MAX_FISH).fill().map(() => {
+      const randomFish = seasonFishRef.current[Math.floor(Math.random() * seasonFishRef.current.length)];
+      return createFish(randomFish);
+    });
+
     setFishes(newFishes);
     newFishes.forEach(fish => {
       Animated.timing(fish.opacity, {
@@ -85,19 +90,26 @@ const StackFishingSimulatorField = ({ route }) => {
   }, []);
 
   const respawnFish = useCallback(() => {
-    if (fishes.length < MAX_FISH && seasonFishRef.current.length > 0) {
-      const availableFish = seasonFishRef.current.filter(fish => !fishes.some(f => f.id === fish.id));
-      if (availableFish.length > 0) {
-        const newFish = createFish(availableFish[Math.floor(Math.random() * availableFish.length)]);
-        setFishes(prevFishes => [...prevFishes, newFish]);
-        Animated.timing(newFish.opacity, {
+    setFishes(prevFishes => {
+      if (prevFishes.length >= MAX_FISH) return prevFishes;
+
+      const numToAdd = Math.min(MAX_FISH - prevFishes.length, seasonFishRef.current.length);
+      const newFishes = Array(numToAdd).fill().map(() => {
+        const randomFish = seasonFishRef.current[Math.floor(Math.random() * seasonFishRef.current.length)];
+        return createFish(randomFish);
+      });
+
+      newFishes.forEach(fish => {
+        Animated.timing(fish.opacity, {
           toValue: 1,
           duration: ANIMATION_DURATION,
           useNativeDriver: true,
         }).start();
-      }
-    }
-  }, [fishes, createFish]);
+      });
+
+      return [...prevFishes, ...newFishes];
+    });
+  }, [createFish]);
 
   const queueFishRegeneration = useCallback(() => {
     const timerId = setTimeout(() => {
@@ -109,33 +121,50 @@ const StackFishingSimulatorField = ({ route }) => {
 
   const catchFish = useCallback((index) => {
     const caughtFish = fishes[index];
-    console.log(`Caught fish: ${caughtFish.name}`);
-    setCaughtFish(prev => [...prev, caughtFish]);
+    const originalFish = fishData.find(f => f.id === caughtFish.id);
+    console.log(`Caught fish: ${originalFish.name}`);
+    setCaughtFish(prev => [...prev, originalFish]);
     
     Animated.timing(caughtFish.opacity, {
       toValue: 0,
       duration: ANIMATION_DURATION,
       useNativeDriver: true,
     }).start(() => {
-      setFishes(prevFishes => prevFishes.filter((_, i) => i !== index));
-      if (fishes.length <= 3) {
-        respawnFish();
-      }
+      setFishes(prevFishes => {
+        const updatedFishes = prevFishes.filter((_, i) => i !== index);
+        if (updatedFishes.length < MIN_FISH) {
+          respawnFish();
+        }
+        return updatedFishes;
+      });
       queueFishRegeneration();
     });
-  }, [fishes, respawnFish, queueFishRegeneration]);
+  }, [respawnFish, queueFishRegeneration]);
 
   const CaughtFishDisplay = useMemo(() => {
+    const groupedFish = caughtFish.reduce((acc, fish) => {
+      if (!acc[fish.id]) {
+        acc[fish.id] = { ...fish, count: 0 };
+      }
+      acc[fish.id].count += 1;
+      return acc;
+    }, {});
+
     return () => (
       <View style={styles.caughtFishContainer}>
         <Text style={styles.caughtFishTitle}>Caught Fish:</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {caughtFish.map((fish, index) => (
-            <View key={index} style={styles.caughtFishItem}>
-              <Image source={fish.image} style={styles.caughtFishImage} />
-              <Text style={styles.caughtFishName}>{fish.name}</Text>
-            </View>
-          ))}
+          <View style={styles.caughtFishTable}>
+            {Object.values(groupedFish).map((fish) => (
+              <View key={fish.id} style={styles.caughtFishRow}>
+                <Image source={fish.image} style={styles.caughtFishImage} />
+                <View style={styles.caughtFishInfo}>
+                  <Text style={styles.caughtFishName}>{fish.name}</Text>
+                  <Text style={styles.caughtFishCount}>x{fish.count}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
         </ScrollView>
       </View>
     );
@@ -180,7 +209,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   caughtFishContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
@@ -190,18 +219,31 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  caughtFishItem: {
+  caughtFishTable: {
+    flexDirection: 'row',
+  },
+  caughtFishRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 10,
+    marginRight: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    borderRadius: 10,
+    padding: 5,
   },
   caughtFishImage: {
     width: 40,
     height: 40,
     resizeMode: 'contain',
   },
+  caughtFishInfo: {
+    marginLeft: 5,
+  },
   caughtFishName: {
     fontSize: 12,
-    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  caughtFishCount: {
+    fontSize: 12,
   },
 });
 
