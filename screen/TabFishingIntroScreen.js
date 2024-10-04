@@ -16,7 +16,7 @@ const TabFishingIntroScreen = ({navigation}) => {
   };
   return (
     <View style={{flex: 1}}>
-      {/* <Text>TabFishingIntroScreen</Text> */}
+      
       <SafeAreaView></SafeAreaView>
       
       <View style={{marginHorizontal: 20}}>

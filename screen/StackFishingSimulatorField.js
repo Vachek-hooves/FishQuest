@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Dimensions,ImageBackground } from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity, Dimensions, ImageBackground } from 'react-native';
 import { fishData } from '../data/fishData';
 
-const StackFishingSimulatorField = ({route}) => {
-  console.log(route.params)
-  const IMAGE=route.params.season.image
+const StackFishingSimulatorField = ({ route }) => {
+  const { season } = route.params;
+  const IMAGE = season.image;
   const [fishes, setFishes] = useState([]);
   const animationRef = useRef();
 
@@ -14,11 +14,14 @@ const StackFishingSimulatorField = ({route}) => {
   }, []);
 
   const generateFishes = () => {
-    const newFishes = fishData.map(fish => ({
+    // Filter fish based on the season
+    const seasonFish = fishData.filter(fish => season.fish.includes(fish.id.toString()));
+    
+    const newFishes = seasonFish.map(fish => ({
       ...fish,
       x: Math.random() * (Dimensions.get('window').width - fish.width),
       y: Math.random() * (Dimensions.get('window').height / 2 - fish.height) + Dimensions.get('window').height / 2,
-      dx: (Math.random() - 0.5) * 0.5, // Random speed between -0.25 and 0.25
+      dx: (Math.random() - 0.5) * 0.5,
       dy: (Math.random() - 0.5) * 0.5,
     }));
     setFishes(newFishes);
@@ -55,7 +58,6 @@ const StackFishingSimulatorField = ({route}) => {
   };
 
   const catchFish = (index) => {
-    // Implement fish catching logic here
     console.log(`Caught fish: ${fishes[index].name}`);
     const updatedFishes = [...fishes];
     updatedFishes.splice(index, 1);
@@ -65,19 +67,16 @@ const StackFishingSimulatorField = ({route}) => {
   return (
     <View style={styles.container}>
       <ImageBackground source={IMAGE} style={styles.lake}>
-
-      {/* <View style={styles.lake}> */}
         {fishes.map((fish, index) => (
           <TouchableOpacity
-          key={index}
-          style={[styles.fish, { left: fish.x, top: fish.y }]}
-          onPress={() => catchFish(index)}
+            key={index}
+            style={[styles.fish, { left: fish.x, top: fish.y }]}
+            onPress={() => catchFish(index)}
           >
             <Image source={fish.image} style={{ width: fish.width, height: fish.height }} />
           </TouchableOpacity>
         ))}
-      {/* </View> */}
-        </ImageBackground>
+      </ImageBackground>
     </View>
   );
 };
