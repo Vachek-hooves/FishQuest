@@ -65,7 +65,7 @@ const StackFishingSimulatorField = ({ route }) => {
   }, []);
 
   const respawnFish = useCallback(() => {
-    if (fishes.length < 4 && seasonFishRef.current.length > 0) {
+    if (fishes.length < 6 && seasonFishRef.current.length > 0) {
       const availableFish = seasonFishRef.current.filter(fish => !fishes.some(f => f.id === fish.id));
       if (availableFish.length > 0) {
         const newFish = {
@@ -98,7 +98,9 @@ const StackFishingSimulatorField = ({ route }) => {
       const updatedFishes = prevFishes.filter((_, i) => i !== index);
       return updatedFishes;
     });
-    respawnFish();
+    if (fishes.length <= 4) {
+      respawnFish();
+    }
     regenerateFish();
   }, [fishes, respawnFish, regenerateFish]);
 
