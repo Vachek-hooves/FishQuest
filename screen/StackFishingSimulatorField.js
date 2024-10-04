@@ -8,16 +8,17 @@ const StackFishingSimulatorField = ({ route }) => {
   const [fishes, setFishes] = useState([]);
   const [caughtFish, setCaughtFish] = useState([]);
   const animationRef = useRef();
+  const seasonFishRef = useRef([]);
 
   useEffect(() => {
     generateFishes();
     return () => cancelAnimation();
   }, []);
 
-  const generateFishes = () => {
-    const seasonFish = fishData.filter(fish => season.fish.includes(fish.id.toString()));
+  const generateFishes = useCallback(() => {
+    seasonFishRef.current = fishData.filter(fish => season.fish.includes(fish.id.toString()));
     
-    const newFishes = seasonFish.map(fish => ({
+    const newFishes = seasonFishRef.current.slice(0, 6).map(fish => ({
       ...fish,
       x: Math.random() * (Dimensions.get('window').width - fish.width),
       y: Math.random() * (Dimensions.get('window').height / 2 - fish.height) + Dimensions.get('window').height / 2,
@@ -26,7 +27,7 @@ const StackFishingSimulatorField = ({ route }) => {
     }));
     setFishes(newFishes);
     startAnimation();
-  };
+  }, [season]);
 
   const startAnimation = useCallback(() => {
     const animate = () => {
@@ -57,16 +58,32 @@ const StackFishingSimulatorField = ({ route }) => {
     }
   }, []);
 
+  const respawnFish = useCallback(() => {
+    if (fishes.length < 4 && seasonFishRef.current.length > 0) {
+      const availableFish = seasonFishRef.current.filter(fish => !fishes.some(f => f.id === fish.id));
+      if (availableFish.length > 0) {
+        const newFish = {
+          ...availableFish[Math.floor(Math.random() * availableFish.length)],
+          x: Math.random() * (Dimensions.get('window').width - 60),
+          y: Math.random() * (Dimensions.get('window').height / 2 - 30) + Dimensions.get('window').height / 2,
+          dx: (Math.random() - 0.5) * 0.5,
+          dy: (Math.random() - 0.5) * 0.5,
+        };
+        setFishes(prevFishes => [...prevFishes, newFish]);
+      }
+    }
+  }, [fishes]);
+
   const catchFish = useCallback((index) => {
     const caughtFish = fishes[index];
     console.log(`Caught fish: ${caughtFish.name}`);
     setCaughtFish(prev => [...prev, caughtFish]);
     setFishes(prevFishes => {
-      const updatedFishes = [...prevFishes];
-      updatedFishes.splice(index, 1);
+      const updatedFishes = prevFishes.filter((_, i) => i !== index);
       return updatedFishes;
     });
-  }, [fishes]);
+    respawnFish();
+  }, [fishes, respawnFish]);
 
   const CaughtFishDisplay = useMemo(() => {
     return () => (
