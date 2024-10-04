@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Dimensions, ImageBackground, Text, ScrollView } from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity, Dimensions, ImageBackground, Text, ScrollView, Animated } from 'react-native';
 import { fishData } from '../data/fishData';
+
+const ANIMATION_DURATION = 500; // Duration of fade in/out animation in milliseconds
 
 const StackFishingSimulatorField = ({ route }) => {
   const { season } = route.params;
@@ -30,8 +32,16 @@ const StackFishingSimulatorField = ({ route }) => {
       y: Math.random() * (Dimensions.get('window').height / 2 - fish.height) + Dimensions.get('window').height / 2,
       dx: (Math.random() - 0.5) * 0.5,
       dy: (Math.random() - 0.5) * 0.5,
+      opacity: new Animated.Value(0),
     }));
     setFishes(newFishes);
+    newFishes.forEach(fish => {
+      Animated.timing(fish.opacity, {
+        toValue: 1,
+        duration: ANIMATION_DURATION,
+        useNativeDriver: true,
+      }).start();
+    });
     startAnimation();
   }, [season]);
 
@@ -74,8 +84,14 @@ const StackFishingSimulatorField = ({ route }) => {
           y: Math.random() * (Dimensions.get('window').height / 2 - 30) + Dimensions.get('window').height / 2,
           dx: (Math.random() - 0.5) * 0.5,
           dy: (Math.random() - 0.5) * 0.5,
+          opacity: new Animated.Value(0),
         };
         setFishes(prevFishes => [...prevFishes, newFish]);
+        Animated.timing(newFish.opacity, {
+          toValue: 1,
+          duration: ANIMATION_DURATION,
+          useNativeDriver: true,
+        }).start();
       }
     }
   }, [fishes]);
@@ -94,14 +110,18 @@ const StackFishingSimulatorField = ({ route }) => {
     const caughtFish = fishes[index];
     console.log(`Caught fish: ${caughtFish.name}`);
     setCaughtFish(prev => [...prev, caughtFish]);
-    setFishes(prevFishes => {
-      const updatedFishes = prevFishes.filter((_, i) => i !== index);
-      return updatedFishes;
+    
+    Animated.timing(caughtFish.opacity, {
+      toValue: 0,
+      duration: ANIMATION_DURATION,
+      useNativeDriver: true,
+    }).start(() => {
+      setFishes(prevFishes => prevFishes.filter((_, i) => i !== index));
+      if (fishes.length <= 3) {
+        respawnFish();
+      }
+      regenerateFish();
     });
-    if (fishes.length <= 4) {
-      respawnFish();
-    }
-    regenerateFish();
   }, [fishes, respawnFish, regenerateFish]);
 
   const CaughtFishDisplay = useMemo(() => {
@@ -125,13 +145,21 @@ const StackFishingSimulatorField = ({ route }) => {
       <ImageBackground source={IMAGE} style={styles.lake}>
         <CaughtFishDisplay />
         {fishes.map((fish, index) => (
-          <TouchableOpacity
+          <Animated.View
             key={fish.id}
-            style={[styles.fish, { left: fish.x, top: fish.y }]}
-            onPress={() => catchFish(index)}
+            style={[
+              styles.fish,
+              {
+                left: fish.x,
+                top: fish.y,
+                opacity: fish.opacity,
+              },
+            ]}
           >
-            <Image source={fish.image} style={{ width: fish.width, height: fish.height }} />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => catchFish(index)}>
+              <Image source={fish.image} style={{ width: fish.width, height: fish.height }} />
+            </TouchableOpacity>
+          </Animated.View>
         ))}
       </ImageBackground>
     </View>
