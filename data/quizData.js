@@ -1140,7 +1140,7 @@ export const quizBeginner = [
 ];
 
 export const quizExpert = [
-  {
+  {locked:false,
     article: [
       {
         topic: 'Fishing Gear',
@@ -1213,7 +1213,7 @@ export const quizExpert = [
       },
     ],
   },
-  {
+  {locked:true,
     article: [
       {
         topic: 'Types of Fish',
@@ -1279,7 +1279,7 @@ export const quizExpert = [
       },
     ],
   },
-  {
+  {locked:true,
     article: [
       {
         topic: 'Fishing Techniques',
@@ -1361,7 +1361,7 @@ export const quizExpert = [
       },
     ],
   },
-  {
+  {locked:true,
     article: [
       {
         topic: 'How to Choose Bait: From Worms to Artificial Lures',
@@ -1425,7 +1425,7 @@ export const quizExpert = [
       },
     ],
   },
-  {
+  {locked:true,
     article: [
       {
         topic: 'Sea Fishing',
@@ -1491,7 +1491,7 @@ export const quizExpert = [
       },
     ],
   },
-  {
+  {locked:true,
     article: [
       {
         topic: 'Winter Fishing',
@@ -1562,7 +1562,7 @@ export const quizExpert = [
       },
     ],
   },
-  {
+  {locked:true,
     article: [
       {
         topic: 'River Fishing',
@@ -1628,7 +1628,7 @@ export const quizExpert = [
       },
     ],
   },
-  {
+  {locked:true,
     article: [
       {
         topic: 'Fishing Bait Techniques',
