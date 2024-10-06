@@ -16,8 +16,23 @@ export const ContextProvider = ({children}) => {
   useEffect(() => {
     const initData = async () => {
       try {
-        // Initialize quizzes (as before)
-        // ... (keep the existing quiz initialization code)
+        // Initialize quizzes
+        const storedBeginnerQuiz = await AsyncStorage.getItem('beginnerQuiz');
+        const storedExpertQuiz = await AsyncStorage.getItem('expertQuiz');
+
+        if (storedBeginnerQuiz) {
+          setBeginnerQuiz(JSON.parse(storedBeginnerQuiz));
+        } else {
+          await AsyncStorage.setItem('beginnerQuiz', JSON.stringify(quizBeginner));
+          setBeginnerQuiz(quizBeginner);
+        }
+
+        if (storedExpertQuiz) {
+          setExpertQuiz(JSON.parse(storedExpertQuiz));
+        } else {
+          await AsyncStorage.setItem('expertQuiz', JSON.stringify(quizExpert));
+          setExpertQuiz(quizExpert);
+        }
 
         // Initialize total score
         const storedTotalScore = await AsyncStorage.getItem('totalScore');

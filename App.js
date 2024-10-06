@@ -10,6 +10,7 @@ import {
   StackSeasonFishing,
   TanFishingToolsScreen,
   TabQuizScreen,
+  StackQuizGame,
 } from './screen';
 import FishingTabIcon from './components/Icons/FishingTabIcon';
 import {QuizTabIcon, ToolsTabIcon} from './components/Icons';
@@ -92,6 +93,7 @@ function App() {
             name="StackSeasonFishing"
             component={StackSeasonFishing}
           />
+          <Stack.Screen name="StackQuizGame" component={StackQuizGame} />
         </Stack.Navigator>
       </NavigationContainer>
     </ContextProvider>

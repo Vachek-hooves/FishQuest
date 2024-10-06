@@ -1138,6 +1138,7 @@ export const quizBeginner = [
     ],
   },
 ];
+
 export const quizExpert = [
   {
     article: [
