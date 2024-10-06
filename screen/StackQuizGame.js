@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   quizContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Slightly transparent white
+    backgroundColor: 'rgba(0, 0, 0, 0.7)', // Dark, slightly transparent black
     borderRadius: 15,
     padding: 20,
     marginBottom: 20,
