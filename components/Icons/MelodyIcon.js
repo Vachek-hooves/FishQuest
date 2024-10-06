@@ -21,7 +21,7 @@ const MelodyIcon = ({active}) => {
         style={{
           width: 40,
           height: 40,
-          tintColor: !active ? 'green' : 'red',
+          tintColor: !active ? 'green' : 'grey',
           transform: [{scale: 1.4}],
         }}
       />
