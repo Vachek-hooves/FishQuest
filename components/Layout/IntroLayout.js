@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  ImageBackground,
-  SafeAreaView,
-} from 'react-native';
+import {ImageBackground, SafeAreaView} from 'react-native';
 
 const IntroLayout = ({children}) => {
   return (
@@ -18,5 +12,3 @@ const IntroLayout = ({children}) => {
 };
 
 export default IntroLayout;
-
-const styles = StyleSheet.create({});

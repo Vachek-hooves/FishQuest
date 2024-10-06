@@ -8,7 +8,6 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {useContextProvider} from '../store/context';
 import {MainLayout} from '../components/Layout';
 
@@ -56,43 +55,34 @@ const TabFishingIntroScreen = ({navigation}) => {
 
   return (
     <MainLayout blur={30}>
-      {/* <SafeAreaView style={styles.container}> */}
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Total Score: {totalScore}</Text>
-        </View>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={styles.scrollView}>
-          {fishSeason &&
-            fishSeason.map((season, index) => (
-              <TouchableOpacity
-                onPress={() => handleSeasonPress(season, index)}
-                key={index}
-                style={styles.seasonButton}>
-                <ImageBackground
-                  source={season.image}
-                  style={styles.seasonImage}>
-                  <Text style={styles.seasonText}>{season.season}</Text>
-                  {season.locked && (
-                    <View style={styles.lockedOverlay}>
-                      <Text style={styles.lockedText}>LOCKED</Text>
-                    </View>
-                  )}
-                </ImageBackground>
-              </TouchableOpacity>
-            ))}
-          <View style={{height: 40}}></View>
-        </ScrollView>
-      {/* </SafeAreaView> */}
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Total Score: {totalScore}</Text>
+      </View>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={styles.scrollView}>
+        {fishSeason &&
+          fishSeason.map((season, index) => (
+            <TouchableOpacity
+              onPress={() => handleSeasonPress(season, index)}
+              key={index}
+              style={styles.seasonButton}>
+              <ImageBackground source={season.image} style={styles.seasonImage}>
+                <Text style={styles.seasonText}>{season.season.toUpperCase()}</Text>
+                {season.locked && (
+                  <View style={styles.lockedOverlay}>
+                    <Text style={styles.lockedText}>LOCKED</Text>
+                  </View>
+                )}
+              </ImageBackground>
+            </TouchableOpacity>
+          ))}
+      </ScrollView>
     </MainLayout>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    // flex: 1,
-    // backgroundColor: '#f0f0f0',
-  },
   header: {
     backgroundColor: '#4a90e2',
     padding: 15,

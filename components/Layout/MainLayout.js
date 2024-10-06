@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  ImageBackground,
-  SafeAreaView,
-} from 'react-native';
+import {View, ImageBackground, SafeAreaView} from 'react-native';
 
 const MainLayout = ({children, blur}) => {
   return (
@@ -14,10 +8,9 @@ const MainLayout = ({children, blur}) => {
       style={{flex: 1}}>
       <SafeAreaView />
       {children}
+      <View style={{height: 100}}></View>
     </ImageBackground>
   );
 };
 
 export default MainLayout;
-
-const styles = StyleSheet.create({});
