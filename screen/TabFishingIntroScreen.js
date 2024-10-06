@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,11 +8,13 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useContextProvider } from '../store/context';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {useContextProvider} from '../store/context';
+import {MainLayout} from '../components/Layout';
 
-const TabFishingIntroScreen = ({ navigation }) => {
-  const { fishSeason, totalScore, getTotalScore, unlockSeason } = useContextProvider();
+const TabFishingIntroScreen = ({navigation}) => {
+  const {fishSeason, totalScore, getTotalScore, unlockSeason} =
+    useContextProvider();
 
   useEffect(() => {
     const fetchTotalScore = async () => {
@@ -24,62 +26,72 @@ const TabFishingIntroScreen = ({ navigation }) => {
   const handleSeasonPress = (season, index) => {
     if (season.locked) {
       Alert.alert(
-        "Locked Season",
-        "This season is locked. Would you like to unlock it for 300 points?",
+        'Locked Season',
+        'This season is locked. Would you like to unlock it for 300 points?',
         [
           {
-            text: "Cancel",
-            style: "cancel"
+            text: 'Cancel',
+            style: 'cancel',
           },
-          { 
-            text: "Unlock", 
+          {
+            text: 'Unlock',
             onPress: async () => {
               const success = await unlockSeason(index);
               if (success) {
-                Alert.alert("Success", "Season unlocked!");
+                Alert.alert('Success', 'Season unlocked!');
               } else {
-                Alert.alert("Error", "Not enough points to unlock this season.");
+                Alert.alert(
+                  'Error',
+                  'Not enough points to unlock this season.',
+                );
               }
-            }
-          }
-        ]
+            },
+          },
+        ],
       );
     } else {
-      navigation.navigate('StackFishingSimulatorField', { season });
+      navigation.navigate('StackFishingSimulatorField', {season});
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Total Score: {totalScore}</Text>
-      </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
-        {fishSeason && fishSeason.map((season, index) => (
-          <TouchableOpacity
-            onPress={() => handleSeasonPress(season, index)}
-            key={index}
-            style={styles.seasonButton}>
-            <ImageBackground source={season.image} style={styles.seasonImage}>
-              <Text style={styles.seasonText}>{season.season}</Text>
-              {season.locked && (
-                <View style={styles.lockedOverlay}>
-                  <Text style={styles.lockedText}>LOCKED</Text>
-                </View>
-              )}
-            </ImageBackground>
-          </TouchableOpacity>
-        ))}
-        <View style={{ height: 20 }}></View>
-      </ScrollView>
-    </SafeAreaView>
+    <MainLayout blur={30}>
+      {/* <SafeAreaView style={styles.container}> */}
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Total Score: {totalScore}</Text>
+        </View>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={styles.scrollView}>
+          {fishSeason &&
+            fishSeason.map((season, index) => (
+              <TouchableOpacity
+                onPress={() => handleSeasonPress(season, index)}
+                key={index}
+                style={styles.seasonButton}>
+                <ImageBackground
+                  source={season.image}
+                  style={styles.seasonImage}>
+                  <Text style={styles.seasonText}>{season.season}</Text>
+                  {season.locked && (
+                    <View style={styles.lockedOverlay}>
+                      <Text style={styles.lockedText}>LOCKED</Text>
+                    </View>
+                  )}
+                </ImageBackground>
+              </TouchableOpacity>
+            ))}
+          <View style={{height: 40}}></View>
+        </ScrollView>
+      {/* </SafeAreaView> */}
+    </MainLayout>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#f0f0f0',
+    // flex: 1,
+    // backgroundColor: '#f0f0f0',
   },
   header: {
     backgroundColor: '#4a90e2',

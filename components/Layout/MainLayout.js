@@ -6,9 +6,10 @@ import {
   SafeAreaView,
 } from 'react-native';
 
-const MainLayout = ({children}) => {
+const MainLayout = ({children, blur}) => {
   return (
     <ImageBackground
+      blurRadius={blur}
       source={require('../../assets/image/bg/lakeForest.jpg')}
       style={{flex: 1}}>
       <SafeAreaView />
