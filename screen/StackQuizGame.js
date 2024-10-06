@@ -13,6 +13,29 @@ const ProgressBar = ({ progress }) => (
   </View>
 );
 
+const OptionButton = ({ option, onPress, disabled, isSelected, isCorrect, showFeedback }) => (
+  <TouchableOpacity onPress={onPress} disabled={disabled}>
+    <LinearGradient
+      colors={
+        showFeedback && (isCorrect || isSelected)
+          ? isCorrect
+            ? ['#4CAF50', '#45a049']
+            : ['#F44336', '#d32f2f']
+          : ['#2c3e50', '#34495e']
+      }
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      style={[
+        styles.optionButton,
+        showFeedback && isCorrect && styles.correctOption,
+        showFeedback && isSelected && !isCorrect && styles.incorrectOption,
+      ]}
+    >
+      <Text style={styles.optionText}>{option}</Text>
+    </LinearGradient>
+  </TouchableOpacity>
+);
+
 const StackQuizGame = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -74,62 +97,65 @@ const StackQuizGame = () => {
 
   if (quizCompleted) {
     return (
-      <QuizFeedback
-        score={score}
-        totalQuestions={currentQuiz.questions.length}
-        onRetry={handleRetryQuiz}
-        onExit={handleExitQuiz}
-      />
+      <MainLayout blur={40}>
+        <QuizFeedback
+          score={score}
+          totalQuestions={currentQuiz.questions.length}
+          onRetry={handleRetryQuiz}
+          onExit={handleExitQuiz}
+        />
+      </MainLayout>
     );
   }
 
   return (
     <MainLayout blur={40}>
-    <SafeAreaView style={styles.container}>
-      <ProgressBar progress={progress} />
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>{currentQuiz.topic}</Text>
-        <Text style={styles.questionCount}>Question {currentQuestionIndex + 1} of {currentQuiz.questions.length}</Text>
-        <Text style={styles.question}>{currentQuestion.question}</Text>
-        {currentQuestion.options.map((option, index) => (
-          <TouchableOpacity
-          key={index}
-          style={getOptionStyle(option)}
-          onPress={() => handleAnswerSelect(option)}
-          disabled={showFeedback}
-          >
-            <Text style={styles.optionText}>{option}</Text>
-          </TouchableOpacity>
-        ))}
-        <View style={styles.feedbackContainer}>
-          {showFeedback && (
-            <Text style={styles.feedbackText}>
-              {selectedAnswer === currentQuestion.correctAnswer 
-                ? "Correct! Well done!" 
-                : `Incorrect. The correct answer is: ${currentQuestion.correctAnswer}`}
-            </Text>
-          )}
-        </View>
-        <TouchableOpacity
-          style={[styles.nextButton, !showFeedback && styles.disabledButton]}
-          onPress={handleNextQuestion}
-          disabled={!showFeedback}
-          >
-          <Text style={styles.nextButtonText}>
-            {currentQuestionIndex === currentQuiz.questions.length - 1 ? 'Finish' : 'Next'}
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </SafeAreaView>
-            </MainLayout>
-    
+      <SafeAreaView style={styles.container}>
+        <ProgressBar progress={progress} />
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.quizContainer}>
+            <Text style={styles.title}>{currentQuiz.topic}</Text>
+            <Text style={styles.questionCount}>Question {currentQuestionIndex + 1} of {currentQuiz.questions.length}</Text>
+            <Text style={styles.question}>{currentQuestion.question}</Text>
+            {currentQuestion.options.map((option, index) => (
+              <OptionButton
+                key={index}
+                option={option}
+                onPress={() => handleAnswerSelect(option)}
+                disabled={showFeedback}
+                isSelected={selectedAnswer === option}
+                isCorrect={option === currentQuestion.correctAnswer}
+                showFeedback={showFeedback}
+              />
+            ))}
+            <View style={styles.feedbackContainer}>
+              {showFeedback && (
+                <Text style={styles.feedbackText}>
+                  {selectedAnswer === currentQuestion.correctAnswer 
+                    ? "Correct! Well done!" 
+                    : `Incorrect. The correct answer is: ${currentQuestion.correctAnswer}`}
+                </Text>
+              )}
+            </View>
+            <TouchableOpacity
+              style={[styles.nextButton, !showFeedback && styles.disabledButton]}
+              onPress={handleNextQuestion}
+              disabled={!showFeedback}
+            >
+              <Text style={styles.nextButtonText}>
+                {currentQuestionIndex === currentQuiz.questions.length - 1 ? 'Finish' : 'Next'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </MainLayout>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // backgroundColor: '#1a1a1a',
+    flex: 1,
   },
   progressBarContainer: {
     width: '100%',
@@ -141,41 +167,64 @@ const styles = StyleSheet.create({
     backgroundColor: '#00A86B',
   },
   scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
     padding: 20,
-    paddingBottom: 40, // Add extra padding at the bottom
+  },
+  quizContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Slightly transparent white
+    borderRadius: 15,
+    padding: 20,
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#ffffff',
     marginBottom: 20,
+    textAlign: 'center',
   },
   questionCount: {
     fontSize: 16,
     color: '#cccccc',
     marginBottom: 10,
+    textAlign: 'center',
   },
   question: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#ffffff',
     marginBottom: 20,
+    textAlign: 'center',
   },
   optionButton: {
-    backgroundColor: '#2a2a2a',
     padding: 15,
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: 15,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    borderWidth: 2,
+    borderColor: '#3498db',
   },
   correctOption: {
-    backgroundColor: '#4CAF50',
+    borderColor: '#2ecc71',
+    borderWidth: 3,
   },
   incorrectOption: {
-    backgroundColor: '#F44336',
+    borderColor: '#e74c3c',
+    borderWidth: 3,
   },
   optionText: {
     color: '#ffffff',
     fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
   },
   feedbackContainer: {
     minHeight: 60, // Set a minimum height to prevent jumping

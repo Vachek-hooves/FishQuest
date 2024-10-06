@@ -1,26 +1,30 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
-const QuizFeedback = ({ score, totalQuestions, onRetry, onExit }) => {
+const QuizFeedback = ({score, totalQuestions, onRetry, onExit}) => {
   const percentage = (score / totalQuestions) * 100;
 
   const getFeedbackMessage = () => {
     if (percentage === 100) return "Perfect! You're a fishing expert!";
-    if (percentage >= 80) return "Great job! You know your stuff!";
-    if (percentage >= 60) return "Good effort! Keep practicing!";
+    if (percentage >= 80) return 'Great job! You know your stuff!';
+    if (percentage >= 60) return 'Good effort! Keep practicing!';
     return "Don't give up! Try again to improve your score.";
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Quiz Completed!</Text>
-      <Text style={styles.score}>Your Score: {score}/{totalQuestions}</Text>
+      <Text style={styles.score}>
+        Your Score: {score}/{totalQuestions}
+      </Text>
       <Text style={styles.percentage}>{percentage.toFixed(0)}%</Text>
       <Text style={styles.message}>{getFeedbackMessage()}</Text>
       <TouchableOpacity style={styles.button} onPress={onRetry}>
         <Text style={styles.buttonText}>Retry Quiz</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.button, styles.exitButton]} onPress={onExit}>
+      <TouchableOpacity
+        style={[styles.button, styles.exitButton]}
+        onPress={onExit}>
         <Text style={styles.buttonText}>Exit to Quiz Menu</Text>
       </TouchableOpacity>
     </View>
@@ -29,11 +33,14 @@ const QuizFeedback = ({ score, totalQuestions, onRetry, onExit }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
     backgroundColor: '#1a1a1a',
+    height: '100%',
+    borderRadius: 20,
+    marginHorizontal:5
   },
   title: {
     fontSize: 24,
