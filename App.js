@@ -12,9 +12,14 @@ import {
   TabQuizScreen,
   StackQuizGame,
   StackHandBookDetail,
+  TabFishingMan,
 } from './screen';
 import FishingTabIcon from './components/Icons/FishingTabIcon';
-import {QuizTabIcon, ToolsTabIcon} from './components/Icons';
+import {FishingManIcon, QuizTabIcon, ToolsTabIcon} from './components/Icons';
+import {
+  playBackgroundMusic,
+  resetPlayer,
+} from './components/soundSystem/setupPlayer';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -36,8 +41,8 @@ const TabNavigation = () => {
           height: 70,
           position: 'absolute',
           bottom: 20,
-          left: 20,
-          right: 20,
+          left: 10,
+          right: 10,
           paddingBottom: Platform.OS === 'ios' ? 20 : 0,
           paddingTop: 30,
         },
@@ -73,6 +78,14 @@ const TabNavigation = () => {
         options={{
           title: '',
           tabBarIcon: ({focused}) => <QuizTabIcon focused={focused} />,
+        }}
+      />
+      <Tab.Screen
+        name="TabFishingMan"
+        component={TabFishingMan}
+        options={{
+          title: '',
+          tabBarIcon: ({focused}) => <FishingManIcon focused={focused} />,
         }}
       />
     </Tab.Navigator>

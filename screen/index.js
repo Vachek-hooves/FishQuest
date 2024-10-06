@@ -5,6 +5,7 @@ import TanFishingToolsScreen from './TabFishingToolsScreen';
 import TabQuizScreen from './TabQuizScreen';
 import StackQuizGame from './StackQuizGame';
 import StackHandBookDetail from './StackHandBookDetail';
+import TabFishingMan from './TabFishingMan';
 
 export {
   StackFishingSimulatorField,
@@ -14,4 +15,5 @@ export {
   TabQuizScreen,
   StackQuizGame,
   StackHandBookDetail,
+  TabFishingMan,
 };
