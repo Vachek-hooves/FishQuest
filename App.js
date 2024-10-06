@@ -18,6 +18,7 @@ const TabNavigation = () => {
   return (
     <Tab.Navigator
       screenOptions={{
+        
         headerShown: false,
         tabBarStyle: {
           backgroundColor: 'rgba(116,204,244,0.9)',
@@ -40,15 +41,19 @@ const TabNavigation = () => {
         },
         tabBarActiveTintColor: '#ffffff',
         tabBarInactiveTintColor: 'rgba(255,255,255,0.6)',
+        title: '',
       }}
     >
       <Tab.Screen
         name="TabFishingIntroScreen"
         component={TabFishingIntroScreen}
         options={{
-          tabBarLabel: 'Fishing',
+          title: '',
+          // tabBarLabel: 'Fishing',
           tabBarIcon: ({ color, size }) => (
+
             <View style={{
+
               backgroundColor: color,
               borderRadius: size / 2,
               padding: 5,
