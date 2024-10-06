@@ -1,14 +1,25 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Dimensions, ImageBackground, Text, ScrollView, Animated, SafeAreaView } from 'react-native';
-import { useContextProvider } from '../store/context';
+import React, {useState, useEffect, useRef, useMemo, useCallback} from 'react';
+import {
+  StyleSheet,
+  View,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+  ImageBackground,
+  Text,
+  ScrollView,
+  Animated,
+  SafeAreaView,
+} from 'react-native';
+import {useContextProvider} from '../store/context';
 
 const ANIMATION_DURATION = 500;
 const MAX_FISH = 6;
 const MIN_FISH = 3;
 
-const StackFishingSimulatorField = ({ route }) => {
-  const { season } = route.params;
-  const { fishData, updateTotalScore } = useContextProvider();
+const StackFishingSimulatorField = ({route}) => {
+  const {season} = route.params;
+  const {fishData, updateTotalScore} = useContextProvider();
   const IMAGE = season.image;
   const [fishes, setFishes] = useState([]);
   const [caughtFish, setCaughtFish] = useState([]);
@@ -31,25 +42,38 @@ const StackFishingSimulatorField = ({ route }) => {
     return `fish_${fishIdCounterRef.current}`;
   }, []);
 
-  const createFish = useCallback((baseFish) => {
-    return {
-      ...baseFish,
-      uniqueId: getNextFishId(),
-      x: Math.random() * (Dimensions.get('window').width - baseFish.width),
-      y: Math.random() * (Dimensions.get('window').height / 2 - baseFish.height) + Dimensions.get('window').height / 2,
-      dx: (Math.random() - 0.5) * 0.5,
-      dy: (Math.random() - 0.5) * 0.5,
-      opacity: new Animated.Value(0),
-    };
-  }, [getNextFishId]);
+  const createFish = useCallback(
+    baseFish => {
+      return {
+        ...baseFish,
+        uniqueId: getNextFishId(),
+        x: Math.random() * (Dimensions.get('window').width - baseFish.width),
+        y:
+          Math.random() *
+            (Dimensions.get('window').height / 2 - baseFish.height) +
+          Dimensions.get('window').height / 2,
+        dx: (Math.random() - 0.5) * 0.5,
+        dy: (Math.random() - 0.5) * 0.5,
+        opacity: new Animated.Value(0),
+      };
+    },
+    [getNextFishId],
+  );
 
   const generateFishes = useCallback(() => {
-    seasonFishRef.current = fishData.filter(fish => season.fish.includes(fish.id.toString()));
-    
-    const newFishes = Array(MAX_FISH).fill().map(() => {
-      const randomFish = seasonFishRef.current[Math.floor(Math.random() * seasonFishRef.current.length)];
-      return createFish(randomFish);
-    });
+    seasonFishRef.current = fishData.filter(fish =>
+      season.fish.includes(fish.id.toString()),
+    );
+
+    const newFishes = Array(MAX_FISH)
+      .fill()
+      .map(() => {
+        const randomFish =
+          seasonFishRef.current[
+            Math.floor(Math.random() * seasonFishRef.current.length)
+          ];
+        return createFish(randomFish);
+      });
 
     setFishes(newFishes);
     newFishes.forEach(fish => {
@@ -64,22 +88,30 @@ const StackFishingSimulatorField = ({ route }) => {
 
   const startAnimation = useCallback(() => {
     const animate = () => {
-      setFishes(prevFishes => prevFishes.map(fish => {
-        let newX = fish.x + fish.dx;
-        let newY = fish.y + fish.dy;
+      setFishes(prevFishes =>
+        prevFishes.map(fish => {
+          let newX = fish.x + fish.dx;
+          let newY = fish.y + fish.dy;
 
-        // Bounce off the edges
-        if (newX <= 0 || newX >= Dimensions.get('window').width - fish.width) {
-          fish.dx *= -1;
-          newX = fish.x + fish.dx;
-        }
-        if (newY <= Dimensions.get('window').height / 2 || newY >= Dimensions.get('window').height - fish.height) {
-          fish.dy *= -1;
-          newY = fish.y + fish.dy;
-        }
+          // Bounce off the edges
+          if (
+            newX <= 0 ||
+            newX >= Dimensions.get('window').width - fish.width
+          ) {
+            fish.dx *= -1;
+            newX = fish.x + fish.dx;
+          }
+          if (
+            newY <= Dimensions.get('window').height / 2 ||
+            newY >= Dimensions.get('window').height - fish.height
+          ) {
+            fish.dy *= -1;
+            newY = fish.y + fish.dy;
+          }
 
-        return { ...fish, x: newX, y: newY };
-      }));
+          return {...fish, x: newX, y: newY};
+        }),
+      );
       animationRef.current = requestAnimationFrame(animate);
     };
     animate();
@@ -95,11 +127,19 @@ const StackFishingSimulatorField = ({ route }) => {
     setFishes(prevFishes => {
       if (prevFishes.length >= MAX_FISH) return prevFishes;
 
-      const numToAdd = Math.min(MAX_FISH - prevFishes.length, seasonFishRef.current.length);
-      const newFishes = Array(numToAdd).fill().map(() => {
-        const randomFish = seasonFishRef.current[Math.floor(Math.random() * seasonFishRef.current.length)];
-        return createFish(randomFish);
-      });
+      const numToAdd = Math.min(
+        MAX_FISH - prevFishes.length,
+        seasonFishRef.current.length,
+      );
+      const newFishes = Array(numToAdd)
+        .fill()
+        .map(() => {
+          const randomFish =
+            seasonFishRef.current[
+              Math.floor(Math.random() * seasonFishRef.current.length)
+            ];
+          return createFish(randomFish);
+        });
 
       newFishes.forEach(fish => {
         Animated.timing(fish.opacity, {
@@ -116,68 +156,73 @@ const StackFishingSimulatorField = ({ route }) => {
   const queueFishRegeneration = useCallback(() => {
     const timerId = setTimeout(() => {
       respawnFish();
-      regenerationQueueRef.current = regenerationQueueRef.current.filter(id => id !== timerId);
+      regenerationQueueRef.current = regenerationQueueRef.current.filter(
+        id => id !== timerId,
+      );
     }, 4000);
     regenerationQueueRef.current.push(timerId);
   }, [respawnFish]);
 
-  const catchFish = useCallback((index) => {
-    setFishes(prevFishes => {
-      if (index >= prevFishes.length) {
-        console.log("Fish no longer exists");
-        return prevFishes;
-      }
-  
-      const caughtFish = prevFishes[index];
-      const originalFish = fishData.find(f => f.id === caughtFish.id);
-      
-      if (!originalFish) {
-        console.log("Original fish data not found");
-        return prevFishes;
-      }
-  
-      console.log(`Caught fish: ${originalFish.name}`);
-      
-      setCaughtFish(prev => [...prev, originalFish]);
-  
-      // Update local score
-      setScore(prevScore => {
-        let scoreIncrement = 0;
-        if (season.task === 'predator') {
-          scoreIncrement = originalFish.type === 'predator' ? 20 : -10;
-        } else if (season.task === 'prey') {
-          scoreIncrement = originalFish.type === 'prey' ? 20 : -10;
+  const catchFish = useCallback(
+    index => {
+      setFishes(prevFishes => {
+        if (index >= prevFishes.length) {
+          console.log('Fish no longer exists');
+          return prevFishes;
         }
-        const newScore = Math.max(prevScore + scoreIncrement, 0);
-        
-        // Update total score in context
-        updateTotalScore(scoreIncrement);
 
-        return newScore;
+        const caughtFish = prevFishes[index];
+        const originalFish = fishData.find(f => f.id === caughtFish.id);
+
+        if (!originalFish) {
+          console.log('Original fish data not found');
+          return prevFishes;
+        }
+
+        console.log(`Caught fish: ${originalFish.name}`);
+
+        setCaughtFish(prev => [...prev, originalFish]);
+
+        // Update local score
+        setScore(prevScore => {
+          let scoreIncrement = 0;
+          if (season.task === 'predator') {
+            scoreIncrement = originalFish.type === 'predator' ? 20 : -10;
+          } else if (season.task === 'prey') {
+            scoreIncrement = originalFish.type === 'prey' ? 20 : -10;
+          }
+          const newScore = Math.max(prevScore + scoreIncrement, 0);
+
+          // Update total score in context
+          updateTotalScore(scoreIncrement);
+
+          return newScore;
+        });
+
+        Animated.timing(caughtFish.opacity, {
+          toValue: 0,
+          duration: ANIMATION_DURATION,
+          useNativeDriver: true,
+        }).start();
+
+        const updatedFishes = prevFishes.filter((_, i) => i !== index);
+
+        if (updatedFishes.length < MIN_FISH) {
+          respawnFish();
+        }
+
+        queueFishRegeneration();
+
+        return updatedFishes;
       });
-  
-      Animated.timing(caughtFish.opacity, {
-        toValue: 0,
-        duration: ANIMATION_DURATION,
-        useNativeDriver: true,
-      }).start();
-  
-      const updatedFishes = prevFishes.filter((_, i) => i !== index);
-      
-      if (updatedFishes.length < MIN_FISH) {
-        respawnFish();
-      }
-      
-      queueFishRegeneration();
-  
-      return updatedFishes;
-    });
-  }, [fishData, season.task, updateTotalScore]);
+    },
+    [fishData, season.task, updateTotalScore],
+  );
 
   const CaughtFishDisplay = useMemo(() => {
     const groupedFish = caughtFish.reduce((acc, fish) => {
       if (!acc[fish.id]) {
-        acc[fish.id] = { ...fish, count: 0 };
+        acc[fish.id] = {...fish, count: 0};
       }
       acc[fish.id].count += 1;
       return acc;
@@ -196,7 +241,7 @@ const StackFishingSimulatorField = ({ route }) => {
           <Text style={[styles.headerCell, styles.countCell]}>Count</Text>
         </View>
         <ScrollView style={styles.tableBody}>
-          {Object.values(groupedFish).map((fish) => (
+          {Object.values(groupedFish).map(fish => (
             <View key={fish.id} style={styles.tableRow}>
               <View style={styles.imageCell}>
                 <Image source={fish.image} style={styles.caughtFishImage} />
@@ -224,10 +269,12 @@ const StackFishingSimulatorField = ({ route }) => {
                 top: fish.y,
                 opacity: fish.opacity,
               },
-            ]}
-          >
+            ]}>
             <TouchableOpacity onPress={() => catchFish(index)}>
-              <Image source={fish.image} style={{ width: fish.width, height: fish.height }} />
+              <Image
+                source={fish.image}
+                style={{width: fish.width, height: fish.height}}
+              />
             </TouchableOpacity>
           </Animated.View>
         ))}
@@ -302,8 +349,9 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   taskText: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 5,
+    color: 'green',
   },
 });
 

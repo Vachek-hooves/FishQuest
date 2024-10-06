@@ -27,6 +27,15 @@ export const ContextProvider = ({children}) => {
           await AsyncStorage.setItem('totalScore', '0');
           setTotalScore(0);
         }
+
+        // Initialize fish season data
+        const storedFishSeason = await AsyncStorage.getItem('fishSeason');
+        if (storedFishSeason) {
+          setFishSeason(JSON.parse(storedFishSeason));
+        } else {
+          await AsyncStorage.setItem('fishSeason', JSON.stringify(initialFishSeason));
+          setFishSeason(initialFishSeason);
+        }
       } catch (error) {
         console.error('Error initializing data:', error);
       }
@@ -65,6 +74,24 @@ export const ContextProvider = ({children}) => {
     }
   };
 
+  const unlockSeason = async (seasonIndex) => {
+    try {
+      const currentScore = await getTotalScore();
+      if (currentScore >= 300) {
+        const updatedFishSeason = [...fishSeason];
+        updatedFishSeason[seasonIndex].locked = false;
+        setFishSeason(updatedFishSeason);
+        await AsyncStorage.setItem('fishSeason', JSON.stringify(updatedFishSeason));
+        await updateTotalScore(-300);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error unlocking season:', error);
+      return false;
+    }
+  };
+
   const value = {
     beginnerQuiz,
     setBeginnerQuiz,
@@ -78,6 +105,7 @@ export const ContextProvider = ({children}) => {
     getTotalScore,
     setTotalScore: setTotalScoreAsync,
     updateTotalScore,
+    unlockSeason,
   };
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

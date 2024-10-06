@@ -6,12 +6,13 @@ import {
   View,
   ImageBackground,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useContextProvider } from '../store/context';
 
 const TabFishingIntroScreen = ({ navigation }) => {
-  const { fishSeason, totalScore, getTotalScore } = useContextProvider();
+  const { fishSeason, totalScore, getTotalScore, unlockSeason } = useContextProvider();
 
   useEffect(() => {
     const fetchTotalScore = async () => {
@@ -20,8 +21,32 @@ const TabFishingIntroScreen = ({ navigation }) => {
     fetchTotalScore();
   }, []);
 
-  const handleSeasonPress = (season) => {
-    navigation.navigate('StackFishingSimulatorField', { season });
+  const handleSeasonPress = (season, index) => {
+    if (season.locked) {
+      Alert.alert(
+        "Locked Season",
+        "This season is locked. Would you like to unlock it for 300 points?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel"
+          },
+          { 
+            text: "Unlock", 
+            onPress: async () => {
+              const success = await unlockSeason(index);
+              if (success) {
+                Alert.alert("Success", "Season unlocked!");
+              } else {
+                Alert.alert("Error", "Not enough points to unlock this season.");
+              }
+            }
+          }
+        ]
+      );
+    } else {
+      navigation.navigate('StackFishingSimulatorField', { season });
+    }
   };
 
   return (
@@ -32,11 +57,16 @@ const TabFishingIntroScreen = ({ navigation }) => {
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
         {fishSeason && fishSeason.map((season, index) => (
           <TouchableOpacity
-            onPress={() => handleSeasonPress(season)}
+            onPress={() => handleSeasonPress(season, index)}
             key={index}
             style={styles.seasonButton}>
             <ImageBackground source={season.image} style={styles.seasonImage}>
               <Text style={styles.seasonText}>{season.season}</Text>
+              {season.locked && (
+                <View style={styles.lockedOverlay}>
+                  <Text style={styles.lockedText}>LOCKED</Text>
+                </View>
+              )}
             </ImageBackground>
           </TouchableOpacity>
         ))}
@@ -83,6 +113,21 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: {width: -1, height: 1},
     textShadowRadius: 10,
+  },
+  lockedOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  lockedText: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
   },
 });
 
