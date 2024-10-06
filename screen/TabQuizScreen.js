@@ -12,23 +12,30 @@ const seasonalAccents = [
   '#4682B4', // Winter: Steel Blue
 ];
 
-const QuizCard = ({ title, description, onPress }) => (
-  <TouchableOpacity onPress={onPress}>
+const QuizCard = ({ title, description, onPress, locked }) => (
+  <TouchableOpacity onPress={onPress} disabled={locked}>
     <LinearGradient
-      colors={['#1a1a1a', '#2a2a2a', '#3a3a3a']}
+      colors={locked ? ['#4a4a4a', '#3a3a3a', '#2a2a2a'] : ['#1a1a1a', '#2a2a2a', '#3a3a3a']}
       start={{x: 0, y: 0}}
       end={{x: 1, y: 1}}
-      style={styles.card}
+      style={[styles.card, locked && styles.lockedCard]}
     >
       <LinearGradient
-        colors={seasonalAccents}
+        colors={locked ? ['#808080', '#A9A9A9'] : seasonalAccents}
         start={{x: 0, y: 0}}
         end={{x: 1, y: 0}}
         style={styles.accentBar}
       />
       <View style={styles.cardContent}>
-        <Text style={styles.cardTitle}>{title}</Text>
-        <Text style={styles.cardDescription}>{description}</Text>
+        <Text style={[styles.cardTitle, locked && styles.lockedText]}>{title}</Text>
+        <Text style={[styles.cardDescription, locked && styles.lockedText]}>
+          {locked ? 'This quiz is locked. Complete previous quizzes to unlock.' : description}
+        </Text>
+        {locked && (
+          <View style={styles.lockIconContainer}>
+            <Text style={styles.lockIcon}>🔒</Text>
+          </View>
+        )}
       </View>
     </LinearGradient>
   </TouchableOpacity>
@@ -39,7 +46,9 @@ const TabQuizScreen = () => {
   const navigation = useNavigation();
 
   const handleQuizPress = (level) => {
-    navigation.navigate('StackQuizGame', { quizType: 'expert', level });
+    if (!expertQuiz[level].locked) {
+      navigation.navigate('StackQuizGame', { quizType: 'expert', level });
+    }
   };
 
   return (
@@ -52,6 +61,7 @@ const TabQuizScreen = () => {
             title={quiz.topic || `Expert Quiz ${index + 1}`}
             description={`Challenge your skills on ${quiz.topic || 'advanced fishing'}!`}
             onPress={() => handleQuizPress(index)}
+            locked={quiz.locked}
           />
         ))}
       </ScrollView>
@@ -74,6 +84,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     overflow: 'hidden',
   },
+  lockedCard: {
+    opacity: 0.7,
+  },
   accentBar: {
     height: 5,
     width: '100%',
@@ -90,6 +103,17 @@ const styles = StyleSheet.create({
   cardDescription: {
     fontSize: 14,
     color: '#cccccc',
+  },
+  lockedText: {
+    color: '#808080',
+  },
+  lockIconContainer: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+  },
+  lockIcon: {
+    fontSize: 20,
   },
 });
 
