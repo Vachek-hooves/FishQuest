@@ -107,6 +107,23 @@ export const ContextProvider = ({children}) => {
     }
   };
 
+  const unlockNextQuizLevel = async (currentLevel, score, totalQuestions) => {
+    try {
+      const percentage = (score / totalQuestions) * 100;
+      if (percentage >= 80 && currentLevel < expertQuiz.length - 1) {
+        const updatedExpertQuiz = [...expertQuiz];
+        updatedExpertQuiz[currentLevel + 1].locked = false;
+        setExpertQuiz(updatedExpertQuiz);
+        await AsyncStorage.setItem('expertQuiz', JSON.stringify(updatedExpertQuiz));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error unlocking next quiz level:', error);
+      return false;
+    }
+  };
+
   const value = {
     beginnerQuiz,
     setBeginnerQuiz,
@@ -121,6 +138,7 @@ export const ContextProvider = ({children}) => {
     setTotalScore: setTotalScoreAsync,
     updateTotalScore,
     unlockSeason,
+    unlockNextQuizLevel,
   };
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
