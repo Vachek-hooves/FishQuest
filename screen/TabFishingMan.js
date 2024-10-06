@@ -21,6 +21,7 @@ const TabFishingMan = () => {
   const [name, setName] = useState('');
   const [image, setImage] = useState(null);
   const [hasProfile, setHasProfile] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -49,6 +50,7 @@ const TabFishingMan = () => {
       await AsyncStorage.setItem('userName', name);
       if (image) await AsyncStorage.setItem('userImage', image);
       setHasProfile(true);
+      setIsEditing(false);
       Alert.alert('Success', 'Profile saved successfully!');
     } catch (error) {
       console.error('Error saving profile:', error);
@@ -57,17 +59,10 @@ const TabFishingMan = () => {
   };
 
   const updateProfile = async () => {
-    if (!name.trim()) {
-      Alert.alert('Error', 'Please enter your name.');
-      return;
-    }
-    try {
-      await AsyncStorage.setItem('userName', name);
-      if (image) await AsyncStorage.setItem('userImage', image);
-      Alert.alert('Success', 'Profile updated successfully!');
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      Alert.alert('Error', 'Failed to update profile. Please try again.');
+    if (isEditing) {
+      await saveProfile();
+    } else {
+      setIsEditing(true);
     }
   };
 
@@ -86,6 +81,7 @@ const TabFishingMan = () => {
               setName('');
               setImage(null);
               setHasProfile(false);
+              setIsEditing(false);
               Alert.alert('Success', 'Profile deleted successfully!');
             } catch (error) {
               console.error('Error deleting profile:', error);
@@ -126,8 +122,8 @@ const TabFishingMan = () => {
 
   return (
     <ProfileLayout>
+      <ControlSound />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <ControlSound />
         <View style={styles.container}>
           <TouchableOpacity onPress={selectImage} style={styles.imageContainer}>
             {image ? (
@@ -138,15 +134,19 @@ const TabFishingMan = () => {
               </View>
             )}
           </TouchableOpacity>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your name"
-              placeholderTextColor="#999"
-              value={name}
-              onChangeText={setName}
-            />
-          </View>
+          {hasProfile && !isEditing ? (
+            <Text style={styles.nameDisplay}>{name}</Text>
+          ) : (
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your name"
+                placeholderTextColor="#999"
+                value={name}
+                onChangeText={setName}
+              />
+            </View>
+          )}
           {!hasProfile ? (
             <TouchableOpacity style={styles.button} onPress={saveProfile}>
               <Text style={styles.buttonText}>Create Profile</Text>
@@ -154,7 +154,9 @@ const TabFishingMan = () => {
           ) : (
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.button} onPress={updateProfile}>
-                <Text style={styles.buttonText}>Update Profile</Text>
+                <Text style={styles.buttonText}>
+                  {isEditing ? 'Save Changes' : 'Update Profile'}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.button, styles.deleteButton]}
@@ -237,6 +239,12 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     backgroundColor: '#e74c3c',
+  },
+  nameDisplay: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 30,
   },
 });
 
