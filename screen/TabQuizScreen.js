@@ -35,33 +35,23 @@ const QuizCard = ({ title, description, onPress }) => (
 );
 
 const TabQuizScreen = () => {
-  const { beginnerQuiz, expertQuiz } = useContextProvider();
+  const { expertQuiz } = useContextProvider();
   const navigation = useNavigation();
 
-  const handleQuizPress = (quizType, level) => {
-    navigation.navigate('StackQuizGame', { quizType, level });
+  const handleQuizPress = (level) => {
+    navigation.navigate('StackQuizGame', { quizType: 'expert', level });
   };
 
   return (
     <MainLayout blur={40}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Quiz Levels</Text>
-        <Text style={styles.sectionTitle}>Beginner Quizzes</Text>
-        {beginnerQuiz && beginnerQuiz.map((quiz, index) => (
-          <QuizCard
-            key={`beginner-${index}`}
-            title={quiz.topic || `Beginner Quiz ${index + 1}`}
-            description={`Test your knowledge on ${quiz.topic || 'fishing'}!`}
-            onPress={() => handleQuizPress('beginner', index)}
-          />
-        ))}
-        <Text style={styles.sectionTitle}>Expert Quizzes</Text>
+        <Text style={styles.title}>Expert Quiz Levels</Text>
         {expertQuiz && expertQuiz.map((quiz, index) => (
           <QuizCard
             key={`expert-${index}`}
             title={quiz.topic || `Expert Quiz ${index + 1}`}
             description={`Challenge your skills on ${quiz.topic || 'advanced fishing'}!`}
-            onPress={() => handleQuizPress('expert', index)}
+            onPress={() => handleQuizPress(index)}
           />
         ))}
       </ScrollView>
@@ -78,13 +68,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#ffffff',
     marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginTop: 15,
-    marginBottom: 10,
   },
   card: {
     borderRadius: 10,
