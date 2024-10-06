@@ -10,32 +10,87 @@ import {
   ScrollView,
   Animated,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import {useContextProvider} from '../store/context';
+import { useNavigation } from '@react-navigation/native';
 
 const ANIMATION_DURATION = 500;
 const MAX_FISH = 6;
 const MIN_FISH = 3;
+const GAME_DURATION = 40; // 40 seconds
+const MIN_SCORE = 200;
 
 const StackFishingSimulatorField = ({route}) => {
+  const navigation = useNavigation();
   const {season} = route.params;
   const {fishData, updateTotalScore} = useContextProvider();
   const IMAGE = season.image;
   const [fishes, setFishes] = useState([]);
   const [caughtFish, setCaughtFish] = useState([]);
   const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(GAME_DURATION);
   const animationRef = useRef();
   const seasonFishRef = useRef([]);
   const regenerationQueueRef = useRef([]);
   const fishIdCounterRef = useRef(0);
+  const timerRef = useRef(null);
 
   useEffect(() => {
     generateFishes();
+    startTimer();
     return () => {
       cancelAnimation();
       regenerationQueueRef.current.forEach(clearTimeout);
+      if (timerRef.current) clearInterval(timerRef.current);
     };
   }, []);
+
+  const startTimer = () => {
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(timerRef.current);
+          setScore((currentScore) => {
+            endGame(currentScore);
+            return currentScore;
+          });
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+  };
+
+  const endGame = (currentScore) => {
+    console.log(currentScore);
+    if (currentScore >= MIN_SCORE) {
+      Alert.alert(
+        "Game Over",
+        `Congratulations! You scored ${currentScore} points.`,
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              updateTotalScore(currentScore);
+              navigation.navigate('TabFishingIntroScreen');
+            }
+          }
+        ]
+      );
+    } else {
+      Alert.alert(
+        "Game Over",
+        `You didn't reach the minimum score of ${MIN_SCORE}. Try again!`,
+        [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate('TabFishingIntroScreen')
+          }
+        ]
+      );
+    }
+  };
 
   const getNextFishId = useCallback(() => {
     fishIdCounterRef.current += 1;
@@ -191,12 +246,7 @@ const StackFishingSimulatorField = ({route}) => {
           } else if (season.task === 'prey') {
             scoreIncrement = originalFish.type === 'prey' ? 20 : -10;
           }
-          const newScore = Math.max(prevScore + scoreIncrement, 0);
-
-          // Update total score in context
-          updateTotalScore(scoreIncrement);
-
-          return newScore;
+          return Math.max(prevScore + scoreIncrement, 0);
         });
 
         Animated.timing(caughtFish.opacity, {
@@ -216,7 +266,7 @@ const StackFishingSimulatorField = ({route}) => {
         return updatedFishes;
       });
     },
-    [fishData, season.task, updateTotalScore],
+    [fishData, season.task],
   );
 
   const CaughtFishDisplay = useMemo(() => {
@@ -233,6 +283,7 @@ const StackFishingSimulatorField = ({route}) => {
         <SafeAreaView>
           <Text style={styles.scoreText}>Score: {score}</Text>
           <Text style={styles.taskText}>Task: Catch {season.task}</Text>
+          <Text style={styles.timerText}>Time left: {timeLeft}s</Text>
         </SafeAreaView>
         <Text style={styles.caughtFishTitle}>Caught Fish:</Text>
         <View style={styles.tableHeader}>
@@ -253,7 +304,7 @@ const StackFishingSimulatorField = ({route}) => {
         </ScrollView>
       </View>
     );
-  }, [caughtFish, score, season.task]);
+  }, [caughtFish, score, season.task, timeLeft]);
 
   return (
     <View style={styles.container}>
@@ -352,6 +403,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 5,
     color: 'green',
+  },
+  timerText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: 'red',
   },
 });
 
