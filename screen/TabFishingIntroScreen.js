@@ -70,7 +70,7 @@ const TabFishingIntroScreen = ({ navigation }) => {
             </ImageBackground>
           </TouchableOpacity>
         ))}
-        <View style={{ height: 100 }}></View>
+        <View style={{ height: 20 }}></View>
       </ScrollView>
     </SafeAreaView>
   );
