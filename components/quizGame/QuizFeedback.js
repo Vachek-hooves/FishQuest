@@ -1,30 +1,29 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
-const QuizFeedback = ({score, totalQuestions, onRetry, onExit}) => {
+const QuizFeedback = ({score, totalQuestions, onRetry, onExit, nextLevelUnlocked}) => {
   const percentage = (score / totalQuestions) * 100;
 
   const getFeedbackMessage = () => {
     if (percentage === 100) return "Perfect! You're a fishing expert!";
-    if (percentage >= 80) return 'Great job! You know your stuff!';
-    if (percentage >= 60) return 'Good effort! Keep practicing!';
+    if (percentage >= 80) return "Great job! You know your stuff!";
+    if (percentage >= 60) return "Good effort! Keep practicing!";
     return "Don't give up! Try again to improve your score.";
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Quiz Completed!</Text>
-      <Text style={styles.score}>
-        Your Score: {score}/{totalQuestions}
-      </Text>
+      <Text style={styles.score}>Your Score: {score}/{totalQuestions}</Text>
       <Text style={styles.percentage}>{percentage.toFixed(0)}%</Text>
       <Text style={styles.message}>{getFeedbackMessage()}</Text>
+      {nextLevelUnlocked && (
+        <Text style={styles.unlockMessage}>Congratulations! You've unlocked the next quiz level!</Text>
+      )}
       <TouchableOpacity style={styles.button} onPress={onRetry}>
         <Text style={styles.buttonText}>Retry Quiz</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={[styles.button, styles.exitButton]}
-        onPress={onExit}>
+      <TouchableOpacity style={[styles.button, styles.exitButton]} onPress={onExit}>
         <Text style={styles.buttonText}>Exit to Quiz Menu</Text>
       </TouchableOpacity>
     </View>
@@ -80,6 +79,13 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  unlockMessage: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#4CAF50',
+    textAlign: 'center',
+    marginBottom: 20,
   },
 });
 

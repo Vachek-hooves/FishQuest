@@ -1,4 +1,4 @@
-import {View, Platform} from 'react-native';
+import {Platform, AppState} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
@@ -11,9 +11,16 @@ import {
   TanFishingToolsScreen,
   TabQuizScreen,
   StackQuizGame,
+  StackHandBookDetail,
+  TabFishingMan,
 } from './screen';
 import FishingTabIcon from './components/Icons/FishingTabIcon';
-import {QuizTabIcon, ToolsTabIcon} from './components/Icons';
+import {FishingManIcon, QuizTabIcon, ToolsTabIcon} from './components/Icons';
+import {
+  playBackgroundMusic,
+  resetPlayer,
+} from './components/soundSystem/setupPlayer';
+import {useEffect} from 'react';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -35,8 +42,8 @@ const TabNavigation = () => {
           height: 70,
           position: 'absolute',
           bottom: 20,
-          left: 20,
-          right: 20,
+          left: 10,
+          right: 10,
           paddingBottom: Platform.OS === 'ios' ? 20 : 0,
           paddingTop: 30,
         },
@@ -47,12 +54,19 @@ const TabNavigation = () => {
         tabBarInactiveTintColor: 'rgba(255,255,255,0.6)',
         title: '',
       }}>
+        <Tab.Screen
+          name="TabFishingMan"
+          component={TabFishingMan}
+          options={{
+            title: '',
+            tabBarIcon: ({focused}) => <FishingManIcon focused={focused} />,
+          }}
+        />
       <Tab.Screen
         name="TabFishingIntroScreen"
         component={TabFishingIntroScreen}
         options={{
           title: '',
-
           tabBarIcon: ({color, size, focused}) => (
             <FishingTabIcon focused={focused} />
           ),
@@ -79,6 +93,30 @@ const TabNavigation = () => {
 };
 
 function App() {
+  useEffect(() => {
+    const initializePlayer = async () => {
+      try {
+        await playBackgroundMusic();
+      } catch (error) {
+        console.error('Error initializing player:', error);
+      }
+    };
+
+    initializePlayer();
+
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (nextAppState === 'background' || nextAppState === 'inactive') {
+        resetPlayer();
+      } else if (nextAppState === 'active') {
+        playBackgroundMusic();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+      resetPlayer();
+    };
+  }, []);
   return (
     <ContextProvider>
       <NavigationContainer>
@@ -94,6 +132,10 @@ function App() {
             component={StackSeasonFishing}
           />
           <Stack.Screen name="StackQuizGame" component={StackQuizGame} />
+          <Stack.Screen
+            name="StackHandBookDetails"
+            component={StackHandBookDetail}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </ContextProvider>

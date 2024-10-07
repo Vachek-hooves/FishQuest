@@ -1704,7 +1704,7 @@ export const quizExpert = [
       },
     ],
   },
-  {
+  {locked:true,
     article: [
       {
         topic: 'Spinning Fishing',
@@ -1776,7 +1776,7 @@ export const quizExpert = [
       },
     ],
   },
-  {
+  {locked:true,
     article: [
       {
         topic: 'Bottom Fishing',

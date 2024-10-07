@@ -40,12 +40,13 @@ const StackQuizGame = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { quizType, level } = route.params;
-  const { expertQuiz, updateTotalScore } = useContextProvider();
+  const { expertQuiz, updateTotalScore, unlockNextQuizLevel } = useContextProvider();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [score, setScore] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [nextLevelUnlocked, setNextLevelUnlocked] = useState(false);
 
   const currentQuiz = expertQuiz[level];
   const currentQuestion = currentQuiz.questions[currentQuestionIndex];
@@ -61,14 +62,16 @@ const StackQuizGame = () => {
     }
   };
 
-  const handleNextQuestion = () => {
+  const handleNextQuestion = async () => {
     if (currentQuestionIndex < currentQuiz.questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer(null);
       setShowFeedback(false);
     } else {
       setQuizCompleted(true);
-      updateTotalScore(score); // Update the total score in the context
+      await updateTotalScore(score);
+      const unlocked = await unlockNextQuizLevel(level, score, currentQuiz.questions.length);
+      setNextLevelUnlocked(unlocked);
     }
   };
 
@@ -78,6 +81,7 @@ const StackQuizGame = () => {
     setShowFeedback(false);
     setScore(0);
     setQuizCompleted(false);
+    setNextLevelUnlocked(false);
   };
 
   const handleExitQuiz = () => {
@@ -103,6 +107,7 @@ const StackQuizGame = () => {
           totalQuestions={currentQuiz.questions.length}
           onRetry={handleRetryQuiz}
           onExit={handleExitQuiz}
+          nextLevelUnlocked={nextLevelUnlocked}
         />
       </MainLayout>
     );
