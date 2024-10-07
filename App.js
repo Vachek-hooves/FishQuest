@@ -54,14 +54,14 @@ const TabNavigation = () => {
         tabBarInactiveTintColor: 'rgba(255,255,255,0.6)',
         title: '',
       }}>
-        <Tab.Screen
-          name="TabFishingMan"
-          component={TabFishingMan}
-          options={{
-            title: '',
-            tabBarIcon: ({focused}) => <FishingManIcon focused={focused} />,
-          }}
-        />
+      <Tab.Screen
+        name="TabFishingMan"
+        component={TabFishingMan}
+        options={{
+          title: '',
+          tabBarIcon: ({focused}) => <FishingManIcon focused={focused} />,
+        }}
+      />
       <Tab.Screen
         name="TabFishingIntroScreen"
         component={TabFishingIntroScreen}
@@ -122,7 +122,14 @@ function App() {
       <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
-          <Stack.Screen name="TabNavigation" component={TabNavigation} />
+          <Stack.Screen
+            name="TabNavigation"
+            component={TabNavigation}
+            options={{
+              gestureEnabled: false,
+              headerLeft: () => null,
+            }}
+          />
           <Stack.Screen
             name="StackFishingSimulatorField"
             component={StackFishingSimulatorField}

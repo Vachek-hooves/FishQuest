@@ -1,11 +1,12 @@
-import React from "react";
-import { StyleSheet, Text, View, ScrollView, Image } from "react-native";
-import { useRoute } from "@react-navigation/native";
-import { MainLayout } from "../components/Layout";
+import React from 'react';
+import {StyleSheet, Text, View, ScrollView, Image} from 'react-native';
+import {useRoute} from '@react-navigation/native';
+import {MainLayout} from '../components/Layout';
+import {ReturnIcon} from '../components/Icons';
 
 const StackHandBookDetail = () => {
   const route = useRoute();
-  const { item } = route.params;
+  const {item} = route.params;
 
   const renderSubsection = (subsection, index) => (
     <View key={index} style={styles.subsection}>
@@ -31,6 +32,7 @@ const StackHandBookDetail = () => {
           {item.sections.map(renderSection)}
         </View>
       </ScrollView>
+      <ReturnIcon />
     </MainLayout>
   );
 };
@@ -48,15 +50,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#ffffff",
+    fontWeight: 'bold',
+    color: '#ffffff',
     marginBottom: 16,
-    textAlign: "center",
+    textAlign: 'center',
   },
   image: {
-    width: "100%",
+    width: '100%',
     height: 200,
-    resizeMode: "cover",
+    resizeMode: 'cover',
     borderRadius: 8,
     marginBottom: 16,
   },
@@ -65,13 +67,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: "bold",
-    color: "#ffffff",
+    fontWeight: 'bold',
+    color: '#ffffff',
     marginBottom: 8,
   },
   sectionContent: {
     fontSize: 16,
-    color: "#e0e0e0",
+    color: '#e0e0e0',
     marginBottom: 16,
   },
   subsection: {
@@ -80,13 +82,13 @@ const styles = StyleSheet.create({
   },
   subsectionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#ffffff",
+    fontWeight: 'bold',
+    color: '#ffffff',
     marginBottom: 8,
   },
   subsectionContent: {
     fontSize: 16,
-    color: "#e0e0e0",
+    color: '#e0e0e0',
   },
 });
 
