@@ -12,6 +12,7 @@ export const ContextProvider = ({children}) => {
   const [fishData, setFishData] = useState(initialFishData);
   const [fishSeason, setFishSeason] = useState(initialFishSeason);
   const [totalScore, setTotalScore] = useState(0);
+  const [unlockedSeasons, setUnlockedSeasons] = useState(1); // Start with 1 as spring is unlocked by default
 
   useEffect(() => {
     const initData = async () => {
@@ -50,6 +51,13 @@ export const ContextProvider = ({children}) => {
         } else {
           await AsyncStorage.setItem('fishSeason', JSON.stringify(initialFishSeason));
           setFishSeason(initialFishSeason);
+        }
+
+        const storedUnlockedSeasons = await AsyncStorage.getItem('unlockedSeasons');
+        if (storedUnlockedSeasons) {
+          setUnlockedSeasons(parseInt(storedUnlockedSeasons, 10));
+        } else {
+          await AsyncStorage.setItem('unlockedSeasons', '1');
         }
       } catch (error) {
         console.error('Error initializing data:', error);
@@ -98,6 +106,8 @@ export const ContextProvider = ({children}) => {
         setFishSeason(updatedFishSeason);
         await AsyncStorage.setItem('fishSeason', JSON.stringify(updatedFishSeason));
         await updateTotalScore(-300);
+        setUnlockedSeasons(prev => prev + 1);
+        await AsyncStorage.setItem('unlockedSeasons', (unlockedSeasons + 1).toString());
         return true;
       }
       return false;
@@ -139,6 +149,7 @@ export const ContextProvider = ({children}) => {
     updateTotalScore,
     unlockSeason,
     unlockNextQuizLevel,
+    unlockedSeasons,
   };
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
