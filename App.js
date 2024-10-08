@@ -1,4 +1,4 @@
-import {Platform, AppState,View,Animated} from 'react-native';
+import {Platform, AppState, View, Animated} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
@@ -20,7 +20,7 @@ import {
   playBackgroundMusic,
   resetPlayer,
 } from './components/soundSystem/setupPlayer';
-import {useEffect, useState,useRef} from 'react';
+import {useEffect, useState, useRef} from 'react';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -166,7 +166,12 @@ function App() {
   return (
     <ContextProvider>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{headerShown: false}}>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            animation: 'fade',
+            animationDuration: 800,
+          }}>
           {currentLoader < 2 ? (
             <Stack.Screen name="Welcome" options={{headerShown: false}}>
               {() => (
