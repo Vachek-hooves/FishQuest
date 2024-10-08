@@ -98,8 +98,10 @@ const TabNavigation = () => {
 };
 
 function App() {
-  const [id, setItem] = useState(0);
-  const anime = useRef(new Animated.Value(0)).current;
+  const [currentLoader, setCurrentLoader] = useState(0);
+  const fadeAnim1 = useRef(new Animated.Value(1)).current;
+  const fadeAnim2 = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
     const initializePlayer = async () => {
       try {
@@ -126,61 +128,69 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fadeStart();
-    const timeOut = setTimeout(() => {
+    const animationTimeout = setTimeout(() => {
+      fadeToNextLoader();
+    }, 3000); // Start transition after 3 seconds
+
+    const navigationTimeout = setTimeout(() => {
       navigateToMenu();
     }, 6000);
-    return () => clearTimeout(timeOut);
-  }, []);
-  
-  const fadeStart = () => {
-    Animated.timing(anime, {
-      toValue: 1,
-      duration: 1500,
-      useNativeDriver: true,
-    }).start(() => fadeFinish());
-  };
 
-  const fadeFinish = () => {
-    Animated.timing(anime, {
-      toValue: 0,
-      duration: 1500,
-      useNativeDriver: true,
-    }).start(() => {
-      setItem(prevState => prevState + 1);
-      fadeStart();
+    return () => {
+      clearTimeout(animationTimeout);
+      clearTimeout(navigationTimeout);
+    };
+  }, []);
+
+  const fadeToNextLoader = () => {
+    Animated.parallel([
+      Animated.timing(fadeAnim1, {
+        toValue: 0,
+        duration: 1500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim2, {
+        toValue: 1,
+        duration: 1500,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setCurrentLoader(1);
     });
   };
-  const navigateToMenu = () => {
-    setItem(2);
-  };
 
+  const navigateToMenu = () => {
+    setCurrentLoader(2);
+  };
 
   return (
     <ContextProvider>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown: false}}>
-        {
-              id < 2 ? (
-                <Stack.Screen name="Welcome" options={{headerShown: false}}>
-                  {() => (
-                    <View style={{flex: 1}}>
-                      <Animated.Image
-                        source={loaders[id]}
-                        style={[
-                          {width: '100%', flex: 1},
-                          {opacity: anime},
-                        ]}></Animated.Image>
-                    </View>
-                  )}
-                </Stack.Screen>
-              ) : (
-                <Stack.Screen
-                  name="WelcomeScreen"
-                  component={WelcomeScreen}
-                />
-              )
-            }
+          {currentLoader < 2 ? (
+            <Stack.Screen name="Welcome" options={{headerShown: false}}>
+              {() => (
+                <View style={{flex: 1}}>
+                  <Animated.Image
+                    source={loaders[0]}
+                    style={[
+                      {width: '100%', height: '100%', position: 'absolute'},
+                      {opacity: fadeAnim1},
+                    ]}
+                  />
+                  <Animated.Image
+                    source={loaders[1]}
+                    style={[
+                      {width: '100%', height: '100%', position: 'absolute'},
+                      {opacity: fadeAnim2},
+                    ]}
+                  />
+                </View>
+              )}
+            </Stack.Screen>
+          ) : (
+            <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+          )}
           {/* <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} /> */}
           <Stack.Screen
             name="TabNavigation"
