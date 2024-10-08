@@ -130,11 +130,11 @@ function App() {
   useEffect(() => {
     const animationTimeout = setTimeout(() => {
       fadeToNextLoader();
-    }, 3000); // Start transition after 3 seconds
+    }, 1500); // Start transition after 3 seconds
 
     const navigationTimeout = setTimeout(() => {
       navigateToMenu();
-    }, 6000);
+    }, 4000);
 
     return () => {
       clearTimeout(animationTimeout);
