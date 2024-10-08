@@ -4,7 +4,7 @@ const ProfileLayout = ({children, blur}) => {
   return (
     <ImageBackground
       blurRadius={blur}
-      source={require('../../assets/image/bg/Profilebg.png')}
+      source={require('../../assets/image/bg/bg.png')}
       style={{flex: 1}}>
       {children}
     </ImageBackground>

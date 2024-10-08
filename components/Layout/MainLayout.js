@@ -4,7 +4,7 @@ const MainLayout = ({children, blur}) => {
   return (
     <ImageBackground
       blurRadius={blur}
-      source={require('../../assets/image/bg/lakeForest.jpg')}
+      source={require('../../assets/image/bg/bg.png')}
       style={{flex: 1}}>
       <SafeAreaView />
       {children}
