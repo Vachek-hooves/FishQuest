@@ -45,7 +45,7 @@ const TabFishingToolsScreen = () => {
   };
 
   return (
-    <MainLayout blur={40}>
+    <MainLayout blur={0}>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.screenTitle}>Fishing Handbook</Text>
         {FisherHandbook.map((item) => (

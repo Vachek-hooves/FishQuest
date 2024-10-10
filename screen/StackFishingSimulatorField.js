@@ -20,11 +20,13 @@ const MAX_FISH = 6;
 const MIN_FISH = 3;
 const GAME_DURATION = 40; // 40 seconds
 const MIN_SCORE = 200;
+const BASE_SPEED = 0.5;
+const SPEED_INCREMENT = 0.2;
 
 const StackFishingSimulatorField = ({route}) => {
   const navigation = useNavigation();
   const {season} = route.params;
-  const {fishData, updateTotalScore} = useContextProvider();
+  const {fishData, updateTotalScore, unlockedSeasons} = useContextProvider();
   const IMAGE = season.image;
   const [fishes, setFishes] = useState([]);
   const [caughtFish, setCaughtFish] = useState([]);
@@ -35,6 +37,8 @@ const StackFishingSimulatorField = ({route}) => {
   const regenerationQueueRef = useRef([]);
   const fishIdCounterRef = useRef(0);
   const timerRef = useRef(null);
+
+  const fishSpeed = BASE_SPEED + (unlockedSeasons - 1) * SPEED_INCREMENT;
 
   useEffect(() => {
     generateFishes();
@@ -107,12 +111,12 @@ const StackFishingSimulatorField = ({route}) => {
           Math.random() *
             (Dimensions.get('window').height / 2 - baseFish.height) +
           Dimensions.get('window').height / 2,
-        dx: (Math.random() - 0.5) * 0.5,
-        dy: (Math.random() - 0.5) * 0.5,
+        dx: (Math.random() - 0.5) * fishSpeed,
+        dy: (Math.random() - 0.5) * fishSpeed,
         opacity: new Animated.Value(0),
       };
     },
-    [getNextFishId],
+    [getNextFishId, fishSpeed],
   );
 
   const generateFishes = useCallback(() => {

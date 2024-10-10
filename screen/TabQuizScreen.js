@@ -1,9 +1,15 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { MainLayout } from '../components/Layout';
-import { useContextProvider } from '../store/context';
-import { useNavigation } from '@react-navigation/native';
+import {MainLayout} from '../components/Layout';
+import {useContextProvider} from '../store/context';
+import {useNavigation} from '@react-navigation/native';
 
 const seasonalAccents = [
   '#00A86B', // Spring: Jade Green
@@ -12,14 +18,17 @@ const seasonalAccents = [
   '#4682B4', // Winter: Steel Blue
 ];
 
-const QuizCard = ({ title, description, onPress, locked }) => (
+const QuizCard = ({title, description, onPress, locked}) => (
   <TouchableOpacity onPress={onPress} disabled={locked}>
     <LinearGradient
-      colors={locked ? ['#4a4a4a', '#3a3a3a', '#2a2a2a'] : ['#1a1a1a', '#2a2a2a', '#3a3a3a']}
+      colors={
+        locked
+          ? ['#4a4a4a', '#3a3a3a', '#2a2a2a']
+          : ['#1a1a1a', '#2a2a2a', '#3a3a3a']
+      }
       start={{x: 0, y: 0}}
       end={{x: 1, y: 1}}
-      style={[styles.card, locked && styles.lockedCard]}
-    >
+      style={[styles.card, locked && styles.lockedCard]}>
       <LinearGradient
         colors={locked ? ['#808080', '#A9A9A9'] : seasonalAccents}
         start={{x: 0, y: 0}}
@@ -27,9 +36,13 @@ const QuizCard = ({ title, description, onPress, locked }) => (
         style={styles.accentBar}
       />
       <View style={styles.cardContent}>
-        <Text style={[styles.cardTitle, locked && styles.lockedText]}>{title}</Text>
+        <Text style={[styles.cardTitle, locked && styles.lockedText]}>
+          {title}
+        </Text>
         <Text style={[styles.cardDescription, locked && styles.lockedText]}>
-          {locked ? 'This quiz is locked. Complete previous quizzes to unlock.' : description}
+          {locked
+            ? 'This quiz is locked. Complete previous quizzes to unlock.'
+            : description}
         </Text>
         {locked && (
           <View style={styles.lockIconContainer}>
@@ -42,28 +55,33 @@ const QuizCard = ({ title, description, onPress, locked }) => (
 );
 
 const TabQuizScreen = () => {
-  const { expertQuiz } = useContextProvider();
+  const {expertQuiz} = useContextProvider();
   const navigation = useNavigation();
 
-  const handleQuizPress = (level) => {
+  const handleQuizPress = level => {
     if (!expertQuiz[level].locked) {
-      navigation.navigate('StackQuizGame', { quizType: 'expert', level });
+      navigation.navigate('StackQuizGame', {quizType: 'expert', level});
     }
   };
 
   return (
-    <MainLayout blur={40}>
-      <ScrollView contentContainerStyle={styles.container}>
+    <MainLayout blur={0}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Expert Quiz Levels</Text>
-        {expertQuiz && expertQuiz.map((quiz, index) => (
-          <QuizCard
-            key={`expert-${index}`}
-            title={quiz.topic || `Expert Quiz ${index + 1}`}
-            description={`Challenge your skills on ${quiz.topic || 'advanced fishing'}!`}
-            onPress={() => handleQuizPress(index)}
-            locked={quiz.locked}
-          />
-        ))}
+        {expertQuiz &&
+          expertQuiz.map((quiz, index) => (
+            <QuizCard
+              key={`expert-${index}`}
+              title={quiz.topic || `Expert Quiz ${index + 1}`}
+              description={`Challenge your skills on ${
+                quiz.topic || 'advanced fishing'
+              }!`}
+              onPress={() => handleQuizPress(index)}
+              locked={quiz.locked}
+            />
+          ))}
       </ScrollView>
     </MainLayout>
   );
@@ -76,8 +94,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#ffffff',
+    // color: '#ffffff',
     marginBottom: 20,
+    color: 'rgba(116,204,244,1)',
+
   },
   card: {
     borderRadius: 10,

@@ -54,7 +54,7 @@ const TabFishingIntroScreen = ({navigation}) => {
   };
 
   return (
-    <MainLayout blur={30}>
+    <MainLayout blur={0}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Total Score: {totalScore}</Text>
       </View>

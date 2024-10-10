@@ -1,4 +1,4 @@
-import {Platform, AppState} from 'react-native';
+import {Platform, AppState, View, Animated} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
@@ -20,10 +20,15 @@ import {
   playBackgroundMusic,
   resetPlayer,
 } from './components/soundSystem/setupPlayer';
-import {useEffect} from 'react';
+import {useEffect, useState, useRef} from 'react';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
+const loaders = [
+  require('./assets/image/loaders/slide1.png'),
+  require('./assets/image/loaders/slide2.jpg'),
+];
 
 const TabNavigation = () => {
   return (
@@ -54,14 +59,14 @@ const TabNavigation = () => {
         tabBarInactiveTintColor: 'rgba(255,255,255,0.6)',
         title: '',
       }}>
-        <Tab.Screen
-          name="TabFishingMan"
-          component={TabFishingMan}
-          options={{
-            title: '',
-            tabBarIcon: ({focused}) => <FishingManIcon focused={focused} />,
-          }}
-        />
+      <Tab.Screen
+        name="TabFishingMan"
+        component={TabFishingMan}
+        options={{
+          title: '',
+          tabBarIcon: ({focused}) => <FishingManIcon focused={focused} />,
+        }}
+      />
       <Tab.Screen
         name="TabFishingIntroScreen"
         component={TabFishingIntroScreen}
@@ -93,6 +98,10 @@ const TabNavigation = () => {
 };
 
 function App() {
+  const [currentLoader, setCurrentLoader] = useState(0);
+  const fadeAnim1 = useRef(new Animated.Value(1)).current;
+  const fadeAnim2 = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
     const initializePlayer = async () => {
       try {
@@ -117,12 +126,85 @@ function App() {
       resetPlayer();
     };
   }, []);
+
+  useEffect(() => {
+    const animationTimeout = setTimeout(() => {
+      fadeToNextLoader();
+    }, 1500); // Start transition after 3 seconds
+
+    const navigationTimeout = setTimeout(() => {
+      navigateToMenu();
+    }, 4000);
+
+    return () => {
+      clearTimeout(animationTimeout);
+      clearTimeout(navigationTimeout);
+    };
+  }, []);
+
+  const fadeToNextLoader = () => {
+    Animated.parallel([
+      Animated.timing(fadeAnim1, {
+        toValue: 0,
+        duration: 1500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim2, {
+        toValue: 1,
+        duration: 1500,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setCurrentLoader(1);
+    });
+  };
+
+  const navigateToMenu = () => {
+    setCurrentLoader(2);
+  };
+
   return (
     <ContextProvider>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{headerShown: false}}>
-          <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
-          <Stack.Screen name="TabNavigation" component={TabNavigation} />
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            animation: 'fade',
+            animationDuration: 800,
+          }}>
+          {currentLoader < 2 ? (
+            <Stack.Screen name="Welcome" options={{headerShown: false}}>
+              {() => (
+                <View style={{flex: 1}}>
+                  <Animated.Image
+                    source={loaders[0]}
+                    style={[
+                      {width: '100%', height: '100%', position: 'absolute'},
+                      {opacity: fadeAnim1},
+                    ]}
+                  />
+                  <Animated.Image
+                    source={loaders[1]}
+                    style={[
+                      {width: '100%', height: '100%', position: 'absolute'},
+                      {opacity: fadeAnim2},
+                    ]}
+                  />
+                </View>
+              )}
+            </Stack.Screen>
+          ) : (
+            <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+          )}
+          {/* <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} /> */}
+          <Stack.Screen
+            name="TabNavigation"
+            component={TabNavigation}
+            options={{
+              gestureEnabled: false,
+              headerLeft: () => null,
+            }}
+          />
           <Stack.Screen
             name="StackFishingSimulatorField"
             component={StackFishingSimulatorField}
