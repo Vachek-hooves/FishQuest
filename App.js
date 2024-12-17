@@ -39,13 +39,13 @@ const TabNavigation = () => {
           shadowOpacity: 0.1,
           shadowRadius: 10,
           borderRadius: 15,
-          height: 70,
+          height: 80,
           position: 'absolute',
-          bottom: 20,
+          bottom: 5,
           left: 10,
           right: 10,
           paddingBottom: Platform.OS === 'ios' ? 20 : 0,
-          paddingTop: 30,
+          paddingTop: 10,
         },
         tabBarItemStyle: {
           paddingTop: 5,
@@ -53,6 +53,7 @@ const TabNavigation = () => {
         tabBarActiveTintColor: '#ffffff',
         tabBarInactiveTintColor: 'rgba(255,255,255,0.6)',
         title: '',
+        tabBarHideOnKeyboard: true,
       }}>
       <Tab.Screen
         name="TabFishingMan"
@@ -88,9 +89,12 @@ const TabNavigation = () => {
           tabBarIcon: ({focused}) => <QuizTabIcon focused={focused} />,
         }}
       />
+      {/* <Tab.Screen /> */}
     </Tab.Navigator>
   );
 };
+
+const NoComponent = () => null;
 
 function App() {
   useEffect(() => {

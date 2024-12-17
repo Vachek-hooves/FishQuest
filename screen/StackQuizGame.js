@@ -160,16 +160,22 @@ const StackQuizGame = () => {
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 20,
     flex: 1,
   },
   progressBarContainer: {
-    width: '100%',
-    height: 10,
+    // width: '100%',
+    height: 15,
     backgroundColor: '#2a2a2a',
+    marginRight: 20,
+    marginLeft: 20,
+    borderRadius: 10,
+
   },
   progressBar: {
     height: '100%',
     backgroundColor: '#00A86B',
+    borderRadius: 10,
   },
   scrollContent: {
     flexGrow: 1,

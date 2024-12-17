@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     padding: 20,
-    minHeight: SCREEN_HEIGHT * 0.8,
+    minHeight: SCREEN_HEIGHT * 0.7,
     marginTop: 60, // Added top margin
   },
   imageContainer: {
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   input: {
     height: 50,
     color: '#00008B', // Changed to dark blue
-    fontSize: 28,
+    fontSize: 20,
   },
   buttonContainer: {
     width: '100%',

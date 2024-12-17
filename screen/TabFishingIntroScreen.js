@@ -71,7 +71,8 @@ const TabFishingIntroScreen = ({navigation}) => {
                 <Text style={styles.seasonText}>{season.season.toUpperCase()}</Text>
                 {season.locked && (
                   <View style={styles.lockedOverlay}>
-                    <Text style={styles.lockedText}>LOCKED</Text>
+                    <Text style={styles.lockedText}>🔒</Text>
+                    {/* <Text style={styles.lockedText}>LOCKED</Text> */}
                   </View>
                 )}
               </ImageBackground>
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
   },
   lockedText: {
     color: 'white',
-    fontSize: 24,
+    fontSize: 65,
     fontWeight: 'bold',
   },
 });
