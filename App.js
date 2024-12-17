@@ -1,4 +1,5 @@
-import {Platform, AppState} from 'react-native';
+import {useEffect, useState} from 'react';
+import {Platform, View, TouchableOpacity, Image, AppState} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
@@ -17,15 +18,38 @@ import {
 import FishingTabIcon from './components/Icons/FishingTabIcon';
 import {FishingManIcon, QuizTabIcon, ToolsTabIcon} from './components/Icons';
 import {
+  cleanupPlayer,
+  setupPlayer,
   playBackgroundMusic,
-  resetPlayer,
+  toggleBackgroundMusic,
 } from './components/soundSystem/setupPlayer';
-import {useEffect} from 'react';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const TabNavigation = () => {
+  const [isPlayMusic, setIsPlayMusic] = useState(false);
+
+  useEffect(() => {
+    const initSound = async () => {
+      await setupPlayer();
+      playBackgroundMusic();
+      setIsPlayMusic(true);
+    };
+
+    initSound();
+
+    return () => {
+      cleanupPlayer();
+    };
+  }, []);
+
+  const handlePlayMusicToggle = () => {
+    const newState = toggleBackgroundMusic();
+    setIsPlayMusic(newState);
+    // setIsPlayMusic(prev => !prev);
+  };
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -42,10 +66,12 @@ const TabNavigation = () => {
           height: 80,
           position: 'absolute',
           bottom: 5,
-          left: 10,
-          right: 10,
+          left: 5,
+          right: 5,
           paddingBottom: Platform.OS === 'ios' ? 20 : 0,
           paddingTop: 10,
+          paddingLeft: 3,
+          paddingRight: 3,
         },
         tabBarItemStyle: {
           paddingTop: 5,
@@ -89,7 +115,32 @@ const TabNavigation = () => {
           tabBarIcon: ({focused}) => <QuizTabIcon focused={focused} />,
         }}
       />
-      {/* <Tab.Screen /> */}
+      <Tab.Screen
+        name="Sound"
+        component={NoComponent}
+        options={{
+          // tabBarLabel: 'Sound',
+          tabBarIcon: ({}) => (
+            <View
+              style={{
+                backgroundColor: isPlayMusic
+                  ? 'rgba(116,204,24,0.5)'
+                  : 'rgba(116,204,244,0.1)',
+                  // : 'rgba(116,204,24,0.5)',
+                padding: 5,
+                borderRadius: 10,
+              }}>
+              <TouchableOpacity onPress={handlePlayMusicToggle}>
+                <Image
+                  source={require('./assets/image/icons/musica.png')}
+                  style={{width: 70, height: 70}}
+                />
+              </TouchableOpacity>
+            </View>
+          ),
+        }}
+        listeners={{tabPress: e => e.preventDefault()}}
+      />
     </Tab.Navigator>
   );
 };
@@ -97,30 +148,30 @@ const TabNavigation = () => {
 const NoComponent = () => null;
 
 function App() {
-  useEffect(() => {
-    const initializePlayer = async () => {
-      try {
-        await playBackgroundMusic();
-      } catch (error) {
-        console.error('Error initializing player:', error);
-      }
-    };
+  // useEffect(() => {
+  //   const initializePlayer = async () => {
+  //     try {
+  //       await playBackgroundMusic();
+  //     } catch (error) {
+  //       console.error('Error initializing player:', error);
+  //     }
+  //   };
 
-    initializePlayer();
+  //   initializePlayer();
 
-    const subscription = AppState.addEventListener('change', nextAppState => {
-      if (nextAppState === 'background' || nextAppState === 'inactive') {
-        resetPlayer();
-      } else if (nextAppState === 'active') {
-        playBackgroundMusic();
-      }
-    });
+  //   const subscription = AppState.addEventListener('change', nextAppState => {
+  //     if (nextAppState === 'background' || nextAppState === 'inactive') {
+  //       resetPlayer();
+  //     } else if (nextAppState === 'active') {
+  //       playBackgroundMusic();
+  //     }
+  //   });
 
-    return () => {
-      subscription.remove();
-      resetPlayer();
-    };
-  }, []);
+  //   return () => {
+  //     subscription.remove();
+  //     resetPlayer();
+  //   };
+  // }, []);
   return (
     <ContextProvider>
       <NavigationContainer>

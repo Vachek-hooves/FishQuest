@@ -122,7 +122,7 @@ const TabFishingMan = () => {
 
   return (
     <ProfileLayout>
-      <ControlSound />
+      {/* <ControlSound /> */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
           <TouchableOpacity onPress={selectImage} style={styles.imageContainer}>
