@@ -13,7 +13,7 @@ import {
   Alert,
 } from 'react-native';
 import {useContextProvider} from '../store/context';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import Orientation from 'react-native-orientation-locker';
 
 const ANIMATION_DURATION = 500;
@@ -44,22 +44,29 @@ const StackFishingSimulatorField = ({route}) => {
   useEffect(() => {
     // Show orientation alert
     Alert.alert(
-      "Screen Orientation",
-      "This game is designed to be played in portrait mode only. Please hold your device vertically.",
+      'Screen Orientation',
+      'This game is designed to be played in portrait mode only. Please hold your device vertically.',
       [
-        { text: "OK", onPress: () => {
-          // Force portrait orientation after user acknowledges
-          Orientation.lockToPortrait();
-          generateFishes();
-          startTimer();
-        }}
-      ]
+        {
+          text: 'OK',
+          onPress: () => {
+            // Force portrait orientation after user acknowledges
+            Orientation.lockToPortrait();
+            
+            // Add a small delay to ensure orientation change is complete
+            setTimeout(() => {
+              generateFishes();
+              startTimer();
+            }, 100);
+          },
+        },
+      ],
     );
-    
+
     return () => {
       // Release the orientation lock when component unmounts
       Orientation.unlockAllOrientations();
-      
+
       // Existing cleanup
       cancelAnimation();
       regenerationQueueRef.current.forEach(clearTimeout);
@@ -69,10 +76,10 @@ const StackFishingSimulatorField = ({route}) => {
 
   const startTimer = () => {
     timerRef.current = setInterval(() => {
-      setTimeLeft((prevTime) => {
+      setTimeLeft(prevTime => {
         if (prevTime <= 1) {
           clearInterval(timerRef.current);
-          setScore((currentScore) => {
+          setScore(currentScore => {
             endGame(currentScore);
             return currentScore;
           });
@@ -83,32 +90,32 @@ const StackFishingSimulatorField = ({route}) => {
     }, 1000);
   };
 
-  const endGame = (currentScore) => {
+  const endGame = currentScore => {
     console.log(currentScore);
     if (currentScore >= MIN_SCORE) {
       Alert.alert(
-        "Game Over",
+        'Game Over',
         `Congratulations! You scored ${currentScore} points.`,
         [
           {
-            text: "OK",
+            text: 'OK',
             onPress: () => {
               updateTotalScore(currentScore);
               navigation.navigate('TabFishingIntroScreen');
-            }
-          }
-        ]
+            },
+          },
+        ],
       );
     } else {
       Alert.alert(
-        "Game Over",
+        'Game Over',
         `You didn't reach the minimum score of ${MIN_SCORE}. Try again!`,
         [
           {
-            text: "OK",
-            onPress: () => navigation.navigate('TabFishingIntroScreen')
-          }
-        ]
+            text: 'OK',
+            onPress: () => navigation.navigate('TabFishingIntroScreen'),
+          },
+        ],
       );
     }
   };
@@ -120,14 +127,16 @@ const StackFishingSimulatorField = ({route}) => {
 
   const createFish = useCallback(
     baseFish => {
+      // Get dimensions after orientation is locked
+      const { width, height } = Dimensions.get('window');
+      
       return {
         ...baseFish,
         uniqueId: getNextFishId(),
-        x: Math.random() * (Dimensions.get('window').width - baseFish.width),
-        y:
-          Math.random() *
-            (Dimensions.get('window').height / 2 - baseFish.height) +
-          Dimensions.get('window').height / 2,
+        x: Math.random() * (width - baseFish.width),
+        y: Math.random() * 
+           (height * 0.4 - baseFish.height) +
+           height * 0.6, // This ensures fish stay in bottom 40% of screen
         dx: (Math.random() - 0.5) * fishSpeed,
         dy: (Math.random() - 0.5) * fishSpeed,
         opacity: new Animated.Value(0),
@@ -164,22 +173,21 @@ const StackFishingSimulatorField = ({route}) => {
 
   const startAnimation = useCallback(() => {
     const animate = () => {
+      const { width, height } = Dimensions.get('window');
+      
       setFishes(prevFishes =>
         prevFishes.map(fish => {
           let newX = fish.x + fish.dx;
           let newY = fish.y + fish.dy;
 
           // Bounce off the edges
-          if (
-            newX <= 0 ||
-            newX >= Dimensions.get('window').width - fish.width
-          ) {
+          if (newX <= 0 || newX >= width - fish.width) {
             fish.dx *= -1;
             newX = fish.x + fish.dx;
           }
           if (
-            newY <= Dimensions.get('window').height / 2 ||
-            newY >= Dimensions.get('window').height - fish.height
+            newY <= height * 0.6 || // Upper boundary at 60%
+            newY >= height - fish.height
           ) {
             fish.dy *= -1;
             newY = fish.y + fish.dy;
