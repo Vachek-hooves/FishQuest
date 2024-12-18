@@ -56,7 +56,7 @@ const WelcomeScreen = ({ navigation }) => {
         }),
       ]).start(() => {
         // Navigate to TabNavigation after all animations complete
-        setTimeout(() => navigation.navigate('TabNavigation'), 500);
+        setTimeout(() => navigation.replace('TabNavigation'), 500);
       });
     });
   }, [fadeAnim, slideAnim, scaleAnim, waveAnim, navigation]);
