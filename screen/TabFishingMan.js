@@ -211,15 +211,15 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: '100%',
     marginBottom: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 10,
     paddingHorizontal: 15,
-    paddingVertical: 5,
+    paddingVertical: 4,
   },
   input: {
     height: 50,
     color: '#00008B', // Changed to dark blue
-    fontSize: 20,
+    fontSize: 22,
   },
   buttonContainer: {
     width: '100%',
