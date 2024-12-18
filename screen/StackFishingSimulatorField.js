@@ -32,6 +32,7 @@ const StackFishingSimulatorField = ({route}) => {
   const [fishes, setFishes] = useState([]);
   const [caughtFish, setCaughtFish] = useState([]);
   const [score, setScore] = useState(0);
+  const scoreRef = useRef(0);
   const [timeLeft, setTimeLeft] = useState(GAME_DURATION);
   const animationRef = useRef();
   const seasonFishRef = useRef([]);
@@ -176,9 +177,15 @@ const StackFishingSimulatorField = ({route}) => {
 
   const handleGameOver = useCallback(() => {
     cancelAnimation();
+    
+    const finalScore = scoreRef.current;
+    console.log('Game Over - Final Score:', finalScore);
+    
+    updateTotalScore(finalScore);
+    
     Alert.alert(
       'Game Over!',
-      `Your score: ${score}`,
+      `Your score: ${finalScore}\nTask: Catch ${season.task}`,
       [
         {
           text: 'OK',
@@ -187,7 +194,7 @@ const StackFishingSimulatorField = ({route}) => {
       ],
       { cancelable: false },
     );
-  }, [score, navigation]);
+  }, [season.task, navigation, updateTotalScore, cancelAnimation]);
 
   const calculateSafeBounds = useCallback((fishWidth, fishHeight) => {
     // Use current orientation value
@@ -435,7 +442,7 @@ const StackFishingSimulatorField = ({route}) => {
 
         setCaughtFish(prev => [...prev, originalFish]);
 
-        // Update local score
+        // Update both score state and ref
         setScore(prevScore => {
           let scoreIncrement = 0;
           if (season.task === 'predator') {
@@ -443,7 +450,9 @@ const StackFishingSimulatorField = ({route}) => {
           } else if (season.task === 'prey') {
             scoreIncrement = originalFish.type === 'prey' ? 20 : -10;
           }
-          return Math.max(prevScore + scoreIncrement, 0);
+          const newScore = Math.max(prevScore + scoreIncrement, 0);
+          scoreRef.current = newScore;
+          return newScore;
         });
 
         Animated.timing(caughtFish.opacity, {
