@@ -1,4 +1,4 @@
-package com.fishquest
+package com.fish.quest
 
 import android.app.Application
 import com.facebook.react.PackageList

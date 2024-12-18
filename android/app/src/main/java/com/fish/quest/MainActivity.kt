@@ -1,4 +1,4 @@
-package com.fishquest
+package com.fish.quest
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
