@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import {useContextProvider} from '../store/context';
 import { useNavigation } from '@react-navigation/native';
+import Orientation from 'react-native-orientation-locker';
 
 const ANIMATION_DURATION = 500;
 const MAX_FISH = 6;
@@ -41,9 +42,25 @@ const StackFishingSimulatorField = ({route}) => {
   const fishSpeed = BASE_SPEED + (unlockedSeasons - 1) * SPEED_INCREMENT;
 
   useEffect(() => {
-    generateFishes();
-    startTimer();
+    // Show orientation alert
+    Alert.alert(
+      "Screen Orientation",
+      "This game is designed to be played in portrait mode only. Please hold your device vertically.",
+      [
+        { text: "OK", onPress: () => {
+          // Force portrait orientation after user acknowledges
+          Orientation.lockToPortrait();
+          generateFishes();
+          startTimer();
+        }}
+      ]
+    );
+    
     return () => {
+      // Release the orientation lock when component unmounts
+      Orientation.unlockAllOrientations();
+      
+      // Existing cleanup
       cancelAnimation();
       regenerationQueueRef.current.forEach(clearTimeout);
       if (timerRef.current) clearInterval(timerRef.current);
