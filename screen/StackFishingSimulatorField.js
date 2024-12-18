@@ -11,6 +11,7 @@ import {
   Animated,
   SafeAreaView,
   Alert,
+  useWindowDimensions,
 } from 'react-native';
 import {useContextProvider} from '../store/context';
 import { useNavigation } from '@react-navigation/native';
@@ -37,64 +38,181 @@ const StackFishingSimulatorField = ({route}) => {
   const regenerationQueueRef = useRef([]);
   const fishIdCounterRef = useRef(0);
   const timerRef = useRef(null);
+  const [orientationKey, setOrientationKey] = useState(0);
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const isLandscape = useRef(screenWidth > screenHeight);
 
   const fishSpeed = BASE_SPEED + (unlockedSeasons - 1) * SPEED_INCREMENT;
 
   useEffect(() => {
-    generateFishes();
-    startTimer();
+    console.log('=== ORIENTATION CHANGE DEBUG ===');
+    console.log('New screen dimensions:', { screenWidth, screenHeight });
+    cancelAnimation();
+    regenerationQueueRef.current.forEach(clearTimeout);
+    regenerationQueueRef.current = [];
+    fishIdCounterRef.current = 0;
+    
+    setFishes([]);
+    
+    setOrientationKey(prev => prev + 1);
+
+    // Initialize season fish data first
+    seasonFishRef.current = fishData.filter(fish =>
+      season.fish.includes(fish.id.toString())
+    );
+
+    const generateFishesWithDelay = () => {
+      console.log('Generating new fishes...');
+      const newFishes = Array(MAX_FISH)
+        .fill()
+        .map(() => {
+          const randomFish =
+            seasonFishRef.current[
+              Math.floor(Math.random() * seasonFishRef.current.length)
+            ];
+          
+          if (!randomFish) {
+            console.error('No fish data available');
+            return null;
+          }
+
+          const safeWidth = screenWidth - (randomFish.width || 50);
+          const safeBottomHalf = screenHeight / 3;
+          const safeHeight = screenHeight - (randomFish.height || 50) - safeBottomHalf;
+
+          const x = Math.min(Math.random() * safeWidth, safeWidth);
+          const y = Math.min(safeBottomHalf + (Math.random() * safeHeight), screenHeight - (randomFish.height || 50));
+
+          console.log('Generated fish position:', {
+            fishId: randomFish.id,
+            fishName: randomFish.name,
+            x,
+            y,
+            screenWidth,
+            screenHeight,
+            safeWidth,
+            safeBottomHalf,
+            safeHeight,
+            fishWidth: randomFish.width,
+            fishHeight: randomFish.height
+          });
+
+          const newFish = {
+            ...randomFish,
+            uniqueId: getNextFishId(),
+            x,
+            y,
+            dx: (Math.random() - 0.5) * fishSpeed,
+            dy: (Math.random() - 0.5) * fishSpeed,
+            opacity: new Animated.Value(1),
+          };
+
+          console.log('Final fish position and dimensions:', {
+            fishId: newFish.id,
+            fishName: newFish.name,
+            finalX: newFish.x,
+            finalY: newFish.y,
+            width: newFish.width,
+            height: newFish.height,
+            speed: {
+              dx: newFish.dx,
+              dy: newFish.dy
+            }
+          });
+
+          return newFish;
+        })
+        .filter(Boolean);
+
+      console.log(`Successfully generated ${newFishes.length} fishes`);
+      setFishes(newFishes);
+      startAnimation();
+    };
+
+    setTimeout(generateFishesWithDelay, 100);
+
     return () => {
       cancelAnimation();
       regenerationQueueRef.current.forEach(clearTimeout);
-      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [screenWidth, screenHeight]);
+
+  useEffect(() => {
+    isLandscape.current = screenWidth > screenHeight;
+    console.log('Orientation updated:', {
+      screenWidth,
+      screenHeight,
+      isLandscape: isLandscape.current
+    });
+  }, [screenWidth, screenHeight]);
+
+  useEffect(() => {
+    startTimer();
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
     };
   }, []);
 
-  const startTimer = () => {
+  const startTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
+    setTimeLeft(GAME_DURATION);
     timerRef.current = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime <= 1) {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
           clearInterval(timerRef.current);
-          setScore((currentScore) => {
-            endGame(currentScore);
-            return currentScore;
-          });
+          handleGameOver();
           return 0;
         }
-        return prevTime - 1;
+        return prev - 1;
       });
     }, 1000);
-  };
+  }, []);
 
-  const endGame = (currentScore) => {
-    console.log(currentScore);
-    if (currentScore >= MIN_SCORE) {
-      Alert.alert(
-        "Game Over",
-        `Congratulations! You scored ${currentScore} points.`,
-        [
-          {
-            text: "OK",
-            onPress: () => {
-              updateTotalScore(currentScore);
-              navigation.navigate('TabFishingIntroScreen');
-            }
-          }
-        ]
-      );
-    } else {
-      Alert.alert(
-        "Game Over",
-        `You didn't reach the minimum score of ${MIN_SCORE}. Try again!`,
-        [
-          {
-            text: "OK",
-            onPress: () => navigation.navigate('TabFishingIntroScreen')
-          }
-        ]
-      );
-    }
-  };
+  const handleGameOver = useCallback(() => {
+    cancelAnimation();
+    Alert.alert(
+      'Game Over!',
+      `Your score: ${score}`,
+      [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ],
+      { cancelable: false },
+    );
+  }, [score, navigation]);
+
+  const calculateSafeBounds = useCallback((fishWidth, fishHeight) => {
+    // Use current orientation value
+    const actualWidth = isLandscape.current ? screenHeight : screenWidth;
+    const actualHeight = isLandscape.current ? screenWidth : screenHeight;
+    
+    const safeWidth = actualWidth - (fishWidth || 50);
+    const safeBottomHalf = actualHeight / 2;
+    const safeHeight = actualHeight - (fishHeight || 50) - safeBottomHalf;
+
+    console.log('Calculating safe bounds:', {
+      isLandscape: isLandscape.current,
+      originalDimensions: { screenWidth, screenHeight },
+      adjustedDimensions: { width: actualWidth, height: actualHeight },
+      safeBounds: { safeWidth, safeBottomHalf, safeHeight }
+    });
+
+    return {
+      safeWidth,
+      safeBottomHalf,
+      safeHeight,
+      actualWidth,
+      actualHeight
+    };
+  }, [screenWidth, screenHeight]);
 
   const getNextFishId = useCallback(() => {
     fishIdCounterRef.current += 1;
@@ -103,20 +221,21 @@ const StackFishingSimulatorField = ({route}) => {
 
   const createFish = useCallback(
     baseFish => {
+      const safeWidth = screenWidth - baseFish.width;
+      const safeBottomHalf = screenHeight / 2;
+      const safeHeight = screenHeight - baseFish.height - safeBottomHalf;
+
       return {
         ...baseFish,
         uniqueId: getNextFishId(),
-        x: Math.random() * (Dimensions.get('window').width - baseFish.width),
-        y:
-          Math.random() *
-            (Dimensions.get('window').height / 2 - baseFish.height) +
-          Dimensions.get('window').height / 2,
+        x: Math.min(Math.random() * safeWidth, safeWidth),
+        y: Math.min(safeBottomHalf + (Math.random() * safeHeight), screenHeight - baseFish.height),
         dx: (Math.random() - 0.5) * fishSpeed,
         dy: (Math.random() - 0.5) * fishSpeed,
         opacity: new Animated.Value(0),
       };
     },
-    [getNextFishId, fishSpeed],
+    [getNextFishId, fishSpeed, screenWidth, screenHeight],
   );
 
   const generateFishes = useCallback(() => {
@@ -152,18 +271,12 @@ const StackFishingSimulatorField = ({route}) => {
           let newX = fish.x + fish.dx;
           let newY = fish.y + fish.dy;
 
-          // Bounce off the edges
-          if (
-            newX <= 0 ||
-            newX >= Dimensions.get('window').width - fish.width
-          ) {
+          // Bounce off the edges using current dimensions
+          if (newX <= 0 || newX >= screenWidth - fish.width) {
             fish.dx *= -1;
             newX = fish.x + fish.dx;
           }
-          if (
-            newY <= Dimensions.get('window').height / 2 ||
-            newY >= Dimensions.get('window').height - fish.height
-          ) {
+          if (newY <= screenHeight / 2 || newY >= screenHeight - fish.height) {
             fish.dy *= -1;
             newY = fish.y + fish.dy;
           }
@@ -174,7 +287,7 @@ const StackFishingSimulatorField = ({route}) => {
       animationRef.current = requestAnimationFrame(animate);
     };
     animate();
-  }, []);
+  }, [screenWidth, screenHeight]);
 
   const cancelAnimation = useCallback(() => {
     if (animationRef.current) {
@@ -183,34 +296,114 @@ const StackFishingSimulatorField = ({route}) => {
   }, []);
 
   const respawnFish = useCallback(() => {
+    console.log('=== RESPAWN FISH DEBUG ===');
+    console.log('Current screen dimensions:', { 
+      screenWidth, 
+      screenHeight, 
+      isLandscape: isLandscape.current,
+      actualWidth: isLandscape.current ? screenHeight : screenWidth,
+      actualHeight: isLandscape.current ? screenWidth : screenHeight
+    });
+    
     setFishes(prevFishes => {
-      if (prevFishes.length >= MAX_FISH) return prevFishes;
+      if (prevFishes.length >= MAX_FISH) {
+        console.log('Max fish limit reached, no respawn needed');
+        return prevFishes;
+      }
 
-      const numToAdd = Math.min(
-        MAX_FISH - prevFishes.length,
-        seasonFishRef.current.length,
-      );
+      const numToAdd = Math.min(MAX_FISH - prevFishes.length, seasonFishRef.current.length);
+      console.log(`Attempting to respawn ${numToAdd} fish`);
+
       const newFishes = Array(numToAdd)
         .fill()
         .map(() => {
-          const randomFish =
-            seasonFishRef.current[
-              Math.floor(Math.random() * seasonFishRef.current.length)
-            ];
-          return createFish(randomFish);
-        });
+          const randomFish = seasonFishRef.current[
+            Math.floor(Math.random() * seasonFishRef.current.length)
+          ];
+          
+          if (!randomFish) {
+            console.error('No fish data available for respawn');
+            return null;
+          }
 
-      newFishes.forEach(fish => {
-        Animated.timing(fish.opacity, {
-          toValue: 1,
-          duration: ANIMATION_DURATION,
-          useNativeDriver: true,
-        }).start();
-      });
+          let x, y;
+          
+          if (isLandscape.current) {
+            // In landscape mode:
+            const safeWidth = screenHeight - (randomFish.width || 50); // Use full height as width
+            const safeBottomHalf = screenWidth / 2; // Use width as height
+            const safeHeight = screenWidth - (randomFish.height || 50) - safeBottomHalf;
 
+            // Calculate positions for landscape
+            x = Math.min(Math.random() * safeWidth, safeWidth);
+            y = safeBottomHalf + Math.min(Math.random() * safeHeight, safeHeight);
+
+            console.log('Landscape position calculation:', {
+              safeWidth,
+              safeBottomHalf,
+              safeHeight,
+              calculatedX: x,
+              calculatedY: y
+            });
+          } else {
+            // Portrait mode - original calculation
+            const safeWidth = screenWidth - (randomFish.width || 50);
+            const safeBottomHalf = screenHeight / 2;
+            const safeHeight = screenHeight - (randomFish.height || 50) - safeBottomHalf;
+
+            x = Math.min(Math.random() * safeWidth, safeWidth);
+            y = safeBottomHalf + Math.min(Math.random() * safeHeight, safeHeight);
+          }
+
+          console.log('New fish being generated:', {
+            fishId: randomFish.id,
+            fishName: randomFish.name,
+            initialPosition: { x, y },
+            orientation: {
+              isLandscape: isLandscape.current,
+              screenWidth,
+              screenHeight
+            },
+            fishDimensions: {
+              width: randomFish.width,
+              height: randomFish.height
+            }
+          });
+
+          const newFish = {
+            ...randomFish,
+            uniqueId: getNextFishId(),
+            x,
+            y,
+            dx: (Math.random() - 0.5) * fishSpeed,
+            dy: (Math.random() - 0.5) * fishSpeed,
+            opacity: new Animated.Value(1),
+          };
+
+          console.log('Final fish position:', {
+            fishId: newFish.id,
+            fishName: newFish.name,
+            finalPosition: {
+              x: newFish.x,
+              y: newFish.y
+            },
+            dimensions: {
+              width: newFish.width,
+              height: newFish.height
+            },
+            orientation: {
+              isLandscape: isLandscape.current
+            }
+          });
+
+          return newFish;
+        })
+        .filter(Boolean);
+
+      console.log(`Successfully generated ${newFishes.length} new fish`);
       return [...prevFishes, ...newFishes];
     });
-  }, [createFish]);
+  }, [screenWidth, screenHeight, fishSpeed]);
 
   const queueFishRegeneration = useCallback(() => {
     const timerId = setTimeout(() => {
@@ -311,7 +504,7 @@ const StackFishingSimulatorField = ({route}) => {
   }, [caughtFish, score, season.task, timeLeft]);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} key={orientationKey}>
       <ImageBackground source={IMAGE} style={styles.lake}>
         <CaughtFishDisplay />
         {fishes.map((fish, index) => (
