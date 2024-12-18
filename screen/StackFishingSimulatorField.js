@@ -491,13 +491,13 @@ const StackFishingSimulatorField = ({route}) => {
           <Text style={styles.taskText}>Task: Catch {season.task}</Text>
           <Text style={styles.timerText}>Time left: {timeLeft}s</Text>
         </SafeAreaView>
-        <Text style={styles.caughtFishTitle}>Caught Fish:</Text>
+        {/* <Text style={styles.caughtFishTitle}>Caught Fish:</Text>
         <View style={styles.tableHeader}>
           <Text style={[styles.headerCell, styles.imageCell]}>Fish</Text>
           <Text style={[styles.headerCell, styles.nameCell]}>Name</Text>
           <Text style={[styles.headerCell, styles.countCell]}>Count</Text>
-        </View>
-        <ScrollView style={styles.tableBody}>
+        </View> */}
+        {/* <ScrollView style={styles.tableBody}>
           {Object.values(groupedFish).map(fish => (
             <View key={fish.id} style={styles.tableRow}>
               <View style={styles.imageCell}>
@@ -507,7 +507,7 @@ const StackFishingSimulatorField = ({route}) => {
               <Text style={styles.countCell}>{fish.count}</Text>
             </View>
           ))}
-        </ScrollView>
+        </ScrollView> */}
       </View>
     );
   }, [caughtFish, score, season.task, timeLeft]);
