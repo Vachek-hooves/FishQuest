@@ -28,27 +28,27 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const TabNavigation = () => {
-  const [isPlayMusic, setIsPlayMusic] = useState(false);
+  // const [isPlayMusic, setIsPlayMusic] = useState(false);
 
-  useEffect(() => {
-    const initSound = async () => {
-      await setupPlayer();
-      playBackgroundMusic();
-      setIsPlayMusic(true);
-    };
+  // useEffect(() => {
+  //   const initSound = async () => {
+  //     await setupPlayer();
+  //     playBackgroundMusic();
+  //     setIsPlayMusic(true);
+  //   };
 
-    initSound();
+  //   initSound();
 
-    return () => {
-      cleanupPlayer();
-    };
-  }, []);
+  //   return () => {
+  //     cleanupPlayer();
+  //   };
+  // }, []);
 
-  const handlePlayMusicToggle = () => {
-    const newState = toggleBackgroundMusic();
-    setIsPlayMusic(newState);
-    // setIsPlayMusic(prev => !prev);
-  };
+  // const handlePlayMusicToggle = () => {
+  //   const newState = toggleBackgroundMusic();
+  //   setIsPlayMusic(newState);
+  //   // setIsPlayMusic(prev => !prev);
+  // };
 
   return (
     <Tab.Navigator
@@ -115,7 +115,7 @@ const TabNavigation = () => {
           tabBarIcon: ({focused}) => <QuizTabIcon focused={focused} />,
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Sound"
         component={NoComponent}
         options={{
@@ -140,7 +140,7 @@ const TabNavigation = () => {
           ),
         }}
         listeners={{tabPress: e => e.preventDefault()}}
-      />
+      /> */}
     </Tab.Navigator>
   );
 };
